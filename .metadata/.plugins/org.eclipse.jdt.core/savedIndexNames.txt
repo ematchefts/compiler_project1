@@ -1,0 +1,16 @@
+INDEX VERSION 1.127+C:\Users\Elizabeth\Documents\Spring 2016\Compiler\projects\project1\compiler_project1\.metadata\.plugins\org.eclipse.jdt.core
+1840407994.index
+710365281.index
+2407343740.index
+3357822389.index
+20454345.index
+2990805955.index
+3453010601.index
+2959744029.index
+845661756.index
+3540839101.index
+3891995667.index
+3942747217.index
+4274890902.index
+3563579007.index
+3831923523.index

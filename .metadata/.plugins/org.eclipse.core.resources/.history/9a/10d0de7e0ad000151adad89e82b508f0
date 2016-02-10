@@ -6,8 +6,6 @@ public class Token {
 	public enum TokenType {
 		ASSIGN_TOKEN,
 		COMMA_TOKEN,
-		COMMENTSTART_TOKEN,
-		COMMENTEND_TOKEN,
 		DIVIDE_TOKEN,
 		DOUBLE_TOKEN,
 		ELSE_TOKEN, 

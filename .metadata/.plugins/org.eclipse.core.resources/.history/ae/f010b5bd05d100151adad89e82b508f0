@@ -61,9 +61,9 @@ public class CMinusScanner implements Scanner {
 	
 	public static void main(String[] args) {
 		
-		//input file from argument and create new FileReader
+		//input and read file
 		File file = new File(args[0]);
-		FileReader fileread = null;
+		Filereader fileread;
 		try {
 			fileread = new FileReader(file);
 		} catch (FileNotFoundException e) {
@@ -71,11 +71,9 @@ public class CMinusScanner implements Scanner {
 			e.printStackTrace();
 		}
 		
-		//declare BufferedReader
 		BufferedReader br = new BufferedReader(fileread);
 		
-		//Create new CMinus Scanner
-		CMinusScanner cMinusScan = new CMinusScanner(br);
+		CMinusScanner cMinusScan = new CMinusScanner()
 	}
 
 }

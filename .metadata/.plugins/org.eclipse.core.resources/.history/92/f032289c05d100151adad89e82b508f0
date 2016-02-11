@@ -1,0 +1,41 @@
+package compiler.scanner;
+
+import java.io.BufferedReader;
+
+import compiler.scanner.State.StateType;
+
+public class CMinusScanner implements Scanner {
+
+	private BufferedReader inFile;
+	private Token nextToken;
+	
+	public CMinusScanner(BufferedReader file){
+		inFile = file;
+		nextToken = scanToken();
+	}
+	private Token scanToken() {
+		//index for storing into tokenString
+		int tokenStringIndex = 0;
+		
+		//holds current token to be returned
+		Token currentToken;
+		
+		//current sate- always begins at START
+		StateType state = State.StateType.START;
+		return null;
+	}
+	@Override
+	public Token getNextToken() {
+		Token returnToken = nextToken;
+		if(nextToken.getTokenType() != Token.TokenType.EOF_TOKEN){
+			nextToken = scanToken();
+		}
+		return returnToken;
+	}
+
+	@Override
+	public Token viewNextToken() {
+		return nextToken;
+	}
+
+}

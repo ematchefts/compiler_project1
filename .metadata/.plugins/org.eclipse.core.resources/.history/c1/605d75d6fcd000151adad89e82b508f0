@@ -12,6 +12,7 @@ public class Token {
 		ELSE_TOKEN,
 		EOF_TOKEN,
 		EQUALTO_TOKEN, // '=='
+		ERROR_TOKEN, // Needed? -Ben
 		GREATERTHAN_TOKEN, 
 		GREATERTHANEQUALTO_TOKEN,
 		ID_TOKEN, 

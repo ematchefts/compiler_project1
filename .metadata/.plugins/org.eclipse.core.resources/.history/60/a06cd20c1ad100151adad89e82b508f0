@@ -53,14 +53,8 @@ public class CMinusScanner implements Scanner {
 	}
 	
 	private char getNextCharacter(){
-		char nextChar = 0;
-		try {
-			nextChar = (char) inFile.read();
-		} catch (IOException e) {
-			System.out.println("Scanner Exception: Unable to get next character.");
-			e.printStackTrace();
-		}
-		return nextChar;
+		//TODO: Implement getNextChar
+		return 0;
 		
 	}
 	

@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 
 import compiler.scanner.State.StateType;
 
@@ -32,43 +31,110 @@ public class CMinusScanner implements Scanner {
 			//flag to indicate save to tokenString
 			boolean save = true;
 			
-			char currentChar = getNextCharacter();
-
-			switch (state) {
+			char c = getNextCharacter();
+			
+			switch (state){
 			case START:
-				if (Character.isDigit(currentChar)) {
-					state = State.StateType.NUM;
-				}
 				break;
-
-			}
-			switch (state) {
+			
+			case EQUALTO:
+				break;
+			
+			case ASSIGN:
+				break;
+				
+			case COMMA:
+				break;
+				
+			case COMMENTSTART:
+				break;
+				
+			case COMMENTEND:
+				break;
+				
+			case DIVIDE:
+				break;
+				
+			case ELSE:
+				break;
+			
+			case GREATERTHANEQUALTO:
+				break;
+				
+			case GREATERTHAN:
+				break;
+				
+			case ID:
+				break;
+				
+			case IF:
+				break;
+				
+			case INT:
+				break;
+				
+			case LEFTCURLYBRACE:
+				break;
+				
+			case LEFTPAREN:
+				break;
+				
+			case LEFTSQBRACKET:
+				break;
+				
+			case LESSTHANEQUALTO:
+				break;
+				
+			case LESSTHAN:
+				break;	
+				
+			case MINUS:
+				break;
+				
+			case MULTIPLY:
+				break;
+				
+			case NOTEQUAL:
+				break;
+				
 			case NUM:
-				currentChar
 				break;
-
+				
+			case PLUS:
+				break;
+				
+			case RETURN:
+				break;
+				
+			case RIGHTCURLYBRACE:
+				break;
+				
+			case RIGHTPAREN:
+				break;
+				
+			case RIGHTSQBRACKET:
+				break;
+				
+			case SEMICOLON:
+				break;
+				
+			case VOID:
+				break;
+				
+			case WHILE:
+				break;
+				
+			case DONE:
+				break;
 			}
 		}
 		return null;
 	}
 	
 	private char getNextCharacter(){
-		//TODO: Implement getNextChar
+	//	infile = new BufferedReader()
 		return 0;
 		
-	}
-	
-	private char viewNextCharacter(){
-		char nextChar = 0;
-		try {
-			inFile.mark(1);
-			nextChar = (char) inFile.read();
-			inFile.reset();
-		} catch (IOException e) {
-			System.out.println("Scanner Exception: Unable to View Next Character");
-			e.printStackTrace();
-		}
-		return nextChar;
 	}
 	
 	@Override
@@ -93,7 +159,7 @@ public class CMinusScanner implements Scanner {
 		try {
 			fileread = new FileReader(file);
 		} catch (FileNotFoundException e) {
-			System.out.println("Scanner Exception: Unable to read file.");
+			System.out.println("Unable to read file.");
 			e.printStackTrace();
 		}
 		

@@ -39,16 +39,15 @@ public class CMinusScanner implements Scanner {
 				if (Character.isDigit(currentChar)) {
 					state = State.StateType.NUM;
 				}
-				switch(state){
-				case NUM:
-					break;
-				}
 				break;
 
 			}
-			
-			currentChar = viewNextCharacter();
-			
+			switch (state) {
+			case NUM:
+				currentChar
+				break;
+
+			}
 		}
 		return null;
 	}

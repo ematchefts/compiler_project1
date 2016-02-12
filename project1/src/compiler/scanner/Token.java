@@ -1,5 +1,12 @@
 package compiler.scanner;
 
+/**
+ * The token class defines a token found by the scanner. It includes the token type
+ * and data found in the token.
+ * 
+ * @author Elizabeth Matchefts & Benjamin Seymour
+ *
+ */
 public class Token {
 
 	// tokenType enum
@@ -39,30 +46,53 @@ public class Token {
 	private TokenType tokenType;
 	private Object tokenData;
 
-	// Constructors
+	/**
+	 * Token constructor
+	 * 
+	 * @param type the TokenType type of the token
+	 */
 	public Token(TokenType type) {
 		this(type, null);
 	}
 
+	/**
+	 * Token Constructor
+	 * @param type the TokenType type of the token
+	 * @param data the value found in the token
+	 */
 	public Token(TokenType type, Object data) {
 		tokenType = type;
 		tokenData = data;
 	}
 
-	// Getters
+	/**
+	 * Token type getter
+	 * @return tokenType the TokenType type of the token
+	 */
 	public TokenType getTokenType() {
 		return tokenType;
 	}
 
+	/**
+	 * Token data getter
+	 * @return tokenData the value found in the token
+	 */
 	public Object getTokenData() {
 		return tokenData;
 	}
 
-	// Setters
+	/**
+	 * Token type setter
+	 * @param type the TokenType type of the token
+	 */
 	public void setTokenType(TokenType type) {
 		tokenType = type;
 	}
 
+	/**
+	 * Token data setter
+	 * @param data the value of the data found in the token
+	 */
 	public void setTokenData(Object data) {
 		tokenData = data;
 	}

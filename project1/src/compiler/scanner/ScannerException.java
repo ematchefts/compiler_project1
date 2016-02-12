@@ -1,7 +1,11 @@
 package compiler.scanner;
 
+/**
+ * This exception class occurs when a lexical error has happened.
+ * 
+ * @author Elizabeth Matchefts & Benjamin Seymour
+ */
 public class ScannerException extends Exception{
-	// Eclipse thinks we need this field for some reason?
 	private static final long serialVersionUID = 1L;
 	
 	public ScannerException() { super(); }

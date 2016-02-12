@@ -1,24 +1,18 @@
 package compiler.scanner;
 
+/**
+ * This class defines the states possible for a CMinusScanner
+ * 
+ * @author Elizabeth Matchefts & Benjamin Seymour
+ *
+ */
 public class State {
 	
-	//TODO: Decide if this is the best implementation of this
 	public enum StateType {
 		START,
 		COMMENT,
-		ELSE,
-		EQUALTO,
-		ERROR,
-		GREATERTHANEQUALTO,
 		ID,
-		IF,
-		INT,
-		LESSTHANEQUALTO,
-		NOTEQUAL,
 		NUM,
-		RETURN,
-		VOID,
-		WHILE,
 		DONE
 	}
 

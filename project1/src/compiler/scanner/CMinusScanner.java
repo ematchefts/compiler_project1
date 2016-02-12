@@ -28,12 +28,13 @@ public class CMinusScanner implements Scanner {
 		inFile = file;
 		nextToken = scanToken();
 	}
+	
 	private Token scanToken() {
 		//index for storing into tokenString
 		int tokenStringIndex = 0;
 		
 		//holds current token to be returned
-		Token currentToken;
+		Token currentToken = null;
 		
 		//current sate- always begins at START
 		StateType state = State.StateType.START;
@@ -51,6 +52,7 @@ public class CMinusScanner implements Scanner {
 				}
 				else if (Character.isDigit(currentChar)) {
 					state = State.StateType.NUM;
+					currentToken = new Token(Token.TokenType.NUM_TOKEN, 0);
 				}
 				else if (Character.isLetter(currentChar)){
 					state = State.StateType.ID;
@@ -94,10 +96,9 @@ public class CMinusScanner implements Scanner {
 						break;
 					
 					default:
-						// Something's wrong - should never get here! Need to note an error here.
+						// TODO: Need to note an error here.
 						break;
 					}
-					break;
 				}
 			case ASSIGN:
 				break;
@@ -130,6 +131,12 @@ public class CMinusScanner implements Scanner {
 			case NOTEQUAL:
 				break;
 			case NUM:
+				// Add the current character to the Token's numeric value
+				currentToken.setTokenData( ( (int)(currentToken.getTokenData() ) * 10) + Character.getNumericValue(currentChar));
+				// If next char isn't digit, we're done!
+				if(!Character.isDigit( this.viewNextCharacter() )){
+					state = State.StateType.DONE;
+				}
 				break;
 			case RETURN:
 				break;
@@ -139,13 +146,15 @@ public class CMinusScanner implements Scanner {
 				break;
 			default:
 				break;
-			
+			// TODO: Something probably happens here.
 			}
 			
-			currentChar = viewNextCharacter();
-			
+			currentChar = getNextCharacter();
 		}
-		return null;
+		
+		// We've hit the DONE state, so reset to START and return the Token we got
+		state = State.StateType.START;
+		return currentToken;
 	}
 	
 	private char getNextCharacter(){
@@ -204,6 +213,21 @@ public class CMinusScanner implements Scanner {
 		
 		//Create new CMinus Scanner
 		CMinusScanner cMinusScan = new CMinusScanner(br);
+		
+		//declare our Token, used for writing out to lex results file
+		Token writeToken = cMinusScan.viewNextToken();
+		//TODO: Write our first token out to a lex results file
+		
+		try {
+			while(br.ready()){
+				writeToken = cMinusScan.getNextToken();
+				//TODO: Write writeToken out to a lex results file
+			}
+		}
+		catch (IOException e){
+			System.out.println("Scanner Exception: An IOException occurred while reading the input file.");
+			e.printStackTrace();
+		}
 	}
 
 }

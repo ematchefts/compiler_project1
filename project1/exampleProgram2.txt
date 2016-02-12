@@ -1,0 +1,37 @@
+/* A Program to put an input 
+value through all kinds of 
+abuse for science (a.k.a. Scanner
+testing) */
+
+int process (int n, int m)
+{ 
+  if (n+1 <= 0) return void ;
+  else{
+	if(n != m){
+		n = n * m;
+	}
+	if(n >= m){
+		n = n / m;
+	}
+	while(n < n*m){
+		n = n+n;
+	}
+	while(n > m){
+		n = n - 1;
+	}
+	if(n == 1){
+		n = n;
+	}
+  } 
+  return process(n-1);
+}
+
+/* Main! */
+void main(void)
+{ int x;
+  int y;
+  x = input();
+  y = input();
+  int z[y];
+  output(process(x,y));
+ }

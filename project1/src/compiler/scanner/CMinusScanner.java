@@ -18,23 +18,24 @@ public class CMinusScanner implements Scanner {
 	private Token nextToken;
 	private boolean lastCapturedWasAlphaNum;
 	
-	private static final Map<String, State.StateType> keywordMap = new HashMap<String, State.StateType>();
+	private static final Map<String, Token.TokenType> keywordMap = 
+			new HashMap<String, Token.TokenType>();
 	static {
-		keywordMap.put("else", State.StateType.ELSE);
-		keywordMap.put("if", State.StateType.IF);
-		keywordMap.put("int", State.StateType.INT);
-		keywordMap.put("return", State.StateType.RETURN);
-		keywordMap.put("void", State.StateType.VOID);
-		keywordMap.put("while", State.StateType.WHILE);
+		keywordMap.put("else", Token.TokenType.ELSE_TOKEN);
+		keywordMap.put("if", Token.TokenType.IF_TOKEN);
+		keywordMap.put("int", Token.TokenType.INT_TOKEN);
+		keywordMap.put("return", Token.TokenType.RETURN_TOKEN);
+		keywordMap.put("void", Token.TokenType.VOID_TOKEN);
+		keywordMap.put("while", Token.TokenType.WHILE_TOKEN);
 	}
 	
-	public CMinusScanner(BufferedReader file){
+	public CMinusScanner(BufferedReader file) throws ScannerException{
 		inFile = file;
 		lastCapturedWasAlphaNum = false;
 		nextToken = scanToken();
 	}
 	
-	private Token scanToken() {		
+	private Token scanToken() throws ScannerException {
 		//holds current token to be returned
 		Token currentToken = null;
 		
@@ -44,7 +45,7 @@ public class CMinusScanner implements Scanner {
 		char currentChar = 0;
 		char nextChar = 0;
 		
-		while (state != State.StateType.DONE && state != State.StateType.ERROR) {			
+		while(state != State.StateType.DONE){
 			currentChar = getNextCharacter();
 			nextChar = viewNextCharacter();
 
@@ -57,10 +58,12 @@ public class CMinusScanner implements Scanner {
 				else if (Character.isDigit(currentChar)) {
 					
 					if(!this.lastCapturedWasAlphaNum){
-						currentToken = new Token(Token.TokenType.NUM_TOKEN, Character.getNumericValue(currentChar));
+						currentToken = new Token(Token.TokenType.NUM_TOKEN, 
+								Character.getNumericValue(currentChar));
 						this.lastCapturedWasAlphaNum = true;
 						
-						//Check if next token is also digit - if so, enter NUM state, else enter DONE
+						//Check if next token is also digit - 
+						//if so, enter NUM state, else enter DONE
 						if(Character.isDigit(nextChar)){
 							state = State.StateType.NUM;
 						}
@@ -69,16 +72,21 @@ public class CMinusScanner implements Scanner {
 						}
 					}
 					else{
-						// TODO: lexical error!
+						throw new ScannerException(
+								"Lexical error: Cannot have one IDENTIFIER, "
+								+ "NUMBER, or keyword after another without "
+								+ "delimiters in between!");
 					}
 				}
 				else if (Character.isLetter(currentChar)){
 					
 					if(!this.lastCapturedWasAlphaNum){
-						currentToken = new Token(Token.TokenType.ID_TOKEN, Character.toString(currentChar));
+						currentToken = new Token(Token.TokenType.ID_TOKEN, 
+								Character.toString(currentChar));
 						this.lastCapturedWasAlphaNum = true;
 						
-						//Check if next token is also digit - if so, enter NUM state, else enter DONE
+						//Check if next token is also digit - 
+						//if so, enter NUM state, else enter DONE
 						if(Character.isLetter(nextChar)){
 							state = State.StateType.ID;
 						}
@@ -87,7 +95,10 @@ public class CMinusScanner implements Scanner {
 						}
 					}
 					else{
-						// TODO: lexical error!
+						throw new ScannerException(
+								"Lexical error: Cannot have one IDENTIFIER, "
+								+ "NUMBER, or keyword after another without "
+								+ "delimiters in between!");
 					}
 				}
 				
@@ -103,7 +114,8 @@ public class CMinusScanner implements Scanner {
 							state = State.StateType.COMMENT;
 						}
 						else{
-							currentToken = new Token(Token.TokenType.DIVIDE_TOKEN);
+							currentToken = new Token(
+									Token.TokenType.DIVIDE_TOKEN);
 							state = State.StateType.DONE;
 						}
 						break;
@@ -113,11 +125,13 @@ public class CMinusScanner implements Scanner {
 						if(nextChar == '='){
 							currentChar = getNextCharacter();
 							nextChar = viewNextCharacter();
-							currentToken = new Token(Token.TokenType.EQUALTO_TOKEN);
+							currentToken = new Token(
+									Token.TokenType.EQUALTO_TOKEN);
 							state = State.StateType.DONE;
 						}
 						else{
-							currentToken = new Token(Token.TokenType.ASSIGN_TOKEN);
+							currentToken = new Token(
+									Token.TokenType.ASSIGN_TOKEN);
 							state = State.StateType.DONE;
 						}
 						break;
@@ -127,11 +141,14 @@ public class CMinusScanner implements Scanner {
 						if(nextChar == '='){
 							currentChar = getNextCharacter();
 							nextChar = viewNextCharacter();
-							currentToken = new Token(Token.TokenType.NOTEQUAL_TOKEN);
+							currentToken = new Token(
+									Token.TokenType.NOTEQUAL_TOKEN);
 							state = State.StateType.DONE;
 						}
 						else{
-							state = State.StateType.ERROR;
+							throw new ScannerException(
+									"Lexical error: Cannot use '!' character "
+									+ "unless in '!=' or inside a comment");
 						}
 						break;
 					
@@ -140,11 +157,13 @@ public class CMinusScanner implements Scanner {
 						if(nextChar == '='){
 							currentChar = getNextCharacter();
 							nextChar = viewNextCharacter();
-							currentToken = new Token(Token.TokenType.LESSTHANEQUALTO_TOKEN);
+							currentToken = new Token(
+									Token.TokenType.LESSTHANEQUALTO_TOKEN);
 							state = State.StateType.DONE;
 						}
 						else{
-							currentToken = new Token(Token.TokenType.LESSTHAN_TOKEN);
+							currentToken = new Token(
+									Token.TokenType.LESSTHAN_TOKEN);
 							state = State.StateType.DONE;
 						}
 						break;
@@ -154,57 +173,73 @@ public class CMinusScanner implements Scanner {
 						if(nextChar == '='){
 							currentChar = getNextCharacter();
 							nextChar = viewNextCharacter();
-							currentToken = new Token(Token.TokenType.GREATERTHANEQUALTO_TOKEN);
+							currentToken = new Token(
+									Token.TokenType.GREATERTHANEQUALTO_TOKEN);
 							state = State.StateType.DONE;
 						}
 						else{
-							currentToken = new Token(Token.TokenType.GREATERTHAN_TOKEN);
+							currentToken = new Token(
+									Token.TokenType.GREATERTHAN_TOKEN);
 							state = State.StateType.DONE;
 						}
 						break;
 						
 					// Single-char tokens
 					default:
-						// Because these are single-char tokens, we can assume we're DONE
+						// Because these are single-char tokens, 
+						// we can assume we're in DONE state
 						state = State.StateType.DONE;
 						switch(currentChar){
 						case ',':
-							currentToken = new Token(Token.TokenType.COMMA_TOKEN);
+							currentToken = new Token(
+									Token.TokenType.COMMA_TOKEN);
 							break;
 						case '{':
-							currentToken = new Token(Token.TokenType.LEFTCURLYBRACE_TOKEN);
+							currentToken = new Token(
+									Token.TokenType.LEFTCURLYBRACE_TOKEN);
 							break;
 						case '(':
-							currentToken = new Token(Token.TokenType.LEFTPAREN_TOKEN);
+							currentToken = new Token(
+									Token.TokenType.LEFTPAREN_TOKEN);
 							break;
 						case '[':
-							currentToken = new Token(Token.TokenType.LEFTSQBRACKET_TOKEN);
+							currentToken = new Token(
+									Token.TokenType.LEFTSQBRACKET_TOKEN);
 							break;
 						case '-':
-							currentToken = new Token(Token.TokenType.MINUS_TOKEN);
+							currentToken = new Token(
+									Token.TokenType.MINUS_TOKEN);
 							break;
 						case '*':
-							currentToken = new Token(Token.TokenType.MULTIPLY_TOKEN);
+							currentToken = new Token(
+									Token.TokenType.MULTIPLY_TOKEN);
 							break;
 						case '+':
-							currentToken = new Token(Token.TokenType.PLUS_TOKEN);
+							currentToken = new Token(
+									Token.TokenType.PLUS_TOKEN);
 							break;
 						case '}':
-							currentToken = new Token(Token.TokenType.RIGHTCURLYBRACE_TOKEN);
+							currentToken = new Token(
+									Token.TokenType.RIGHTCURLYBRACE_TOKEN);
 							break;
 						case ')':
-							currentToken = new Token(Token.TokenType.RIGHTPAREN_TOKEN);
+							currentToken = new Token(
+									Token.TokenType.RIGHTPAREN_TOKEN);
 							break;
 						case ']':
-							currentToken = new Token(Token.TokenType.RIGHTSQBRACKET_TOKEN);
+							currentToken = new Token(
+									Token.TokenType.RIGHTSQBRACKET_TOKEN);
 							break;
 						case ';':
-							currentToken = new Token(Token.TokenType.SEMICOLON_TOKEN);
+							currentToken = new Token(
+									Token.TokenType.SEMICOLON_TOKEN);
 							break;
 						
 						default:
-							// TODO: Need to note an error here.
-							break;
+							throw new ScannerException(
+									"Lexical error: the CMinusScanner cannot "
+									+ "accept the character '" + currentChar
+									+ "' unless inside a comment");
 						}
 					}	
 				}
@@ -216,7 +251,9 @@ public class CMinusScanner implements Scanner {
 					if(nextChar == '/'){
 						currentChar = getNextCharacter();
 						nextChar = viewNextCharacter();
-						state = State.StateType.DONE;
+						// Reached end of comment - we don't want to store it 
+						// at all, so reset to START
+						state = State.StateType.START;
 					}
 				}
 				break;
@@ -224,7 +261,8 @@ public class CMinusScanner implements Scanner {
 				break;
 			case ID:
 				// Add the current character to the Token's numeric value
-				currentToken.setTokenData( (String)currentToken.getTokenData() + currentChar);
+				currentToken.setTokenData( 
+						(String)currentToken.getTokenData() + currentChar);
 				if( !Character.isLetter(nextChar) ){
 					// If next char isn't digit, we're done!
 					this.lastCapturedWasAlphaNum = true;
@@ -233,7 +271,9 @@ public class CMinusScanner implements Scanner {
 				break;
 			case NUM:
 				// Add the current character to the Token's numeric value
-				currentToken.setTokenData( ( (int)(currentToken.getTokenData() ) * 10) + Character.getNumericValue(currentChar));
+				currentToken.setTokenData( 
+						((int)(currentToken.getTokenData() ) * 10) +
+						Character.getNumericValue(currentChar));
 				if( !Character.isDigit(nextChar) ){
 					// If next char isn't digit, we're done!
 					this.lastCapturedWasAlphaNum = true;
@@ -241,19 +281,25 @@ public class CMinusScanner implements Scanner {
 				}
 				break;
 			default:
-				break;
-			// TODO: Something probably happens here.
+				throw new ScannerException(
+						"Scanner state error: Scanner entered an invalid "
+						+ "state.");
 			}
 		}
 		
-		if(state == State.StateType.ERROR){
-			System.out.println("Lexical error: " + currentChar + "followed by " + nextChar);
-		}
-		
-		// We've hit the DONE (or ERROR) state, so reset to START and return the Token we got
+		// We've hit the DONE state, so reset to START 
+		// and return the Token we got
 		state = State.StateType.START;
 		
 		// But first, if we say we got an ID, check against keywords.
+		if(currentToken.getTokenType() == Token.TokenType.ID_TOKEN){
+			String word = (String)currentToken.getTokenData();
+			Token.TokenType newType = CMinusScanner.keywordMap.get(word);
+			if(newType != null){
+				currentToken.setTokenType(newType);
+				currentToken.setTokenData(null);
+			}
+		}
 		
 		return currentToken;
 	}
@@ -263,7 +309,8 @@ public class CMinusScanner implements Scanner {
 		try {
 			nextChar = (char) inFile.read();
 		} catch (IOException e) {
-			System.out.println("Scanner Exception: Unable to get next character.");
+			System.out.println(
+					"Scanner Exception: Unable to get next character.");
 			e.printStackTrace();
 		}
 		return nextChar;
@@ -277,7 +324,8 @@ public class CMinusScanner implements Scanner {
 			nextChar = (char) inFile.read();
 			inFile.reset();
 		} catch (IOException e) {
-			System.out.println("Scanner Exception: Unable to View Next Character");
+			System.out.println(
+					"Scanner Exception: Unable to View Next Character");
 			e.printStackTrace();
 		}
 		return nextChar;
@@ -285,14 +333,34 @@ public class CMinusScanner implements Scanner {
 	
 	@Override
 	public Token getNextToken() {
-		Token returnToken = nextToken;
-		nextToken =  returnToken;
-		return scanToken();
+		try{
+			nextToken = scanToken();
+		}
+		catch(ScannerException e){
+			System.out.println(e.getMessage());
+		}
+		return nextToken;
 	}
 
 	@Override
-	public Token viewNextToken() {
+	public Token viewLastToken() {
 		return nextToken;
+	}
+	
+	public String getTokenTypeString(){
+		String returnString = "";
+		if(viewLastToken().getTokenType() != null){
+			returnString = viewLastToken().getTokenType().toString();
+		}
+		return returnString;
+	}
+	
+	public String getTokenDataString(){
+		String returnString = "";
+		if(viewLastToken().getTokenData() != null){
+			returnString = viewLastToken().getTokenData().toString();
+		}
+		return returnString;
 	}
 	
 	public static void main(String[] args) {
@@ -310,40 +378,49 @@ public class CMinusScanner implements Scanner {
 		//declare BufferedReader
 		BufferedReader br = new BufferedReader(fileread);
 		
-		//Create new CMinus Scanner
-		CMinusScanner cMinusScan = new CMinusScanner(br);
 		
-		//declare our Token, used for writing out to lex results file
-		Token writeToken = cMinusScan.viewNextToken();
 
-		//Get ready to output a lex file
+		//Get ready to scan and output a lex file
 		try {
+			//Create new CMinus Scanner
+			CMinusScanner cMinusScan = new CMinusScanner(br);
+			
+			//Get strings from the initial captured token
+			String tokenType = cMinusScan.getTokenTypeString();
+			String tokenData = cMinusScan.getTokenDataString();
+			
 			PrintWriter writer;
 			//Create the file
 			writer = new PrintWriter(args[0] + ".lex", "UTF-8");
 			
 			//Print the first token as a line
-			writer.println(writeToken.getTokenType().toString() + writeToken.getTokenData().toString());
+			writer.println(tokenType + "			" + tokenData);
 			
 			//Print all additional tokens as additional lines
 			while(br.ready()){
-				writeToken = cMinusScan.getNextToken();
-				writer.println(writeToken.getTokenType().toString() + writeToken.getTokenData().toString());
+				cMinusScan.getNextToken();
+				tokenType = cMinusScan.getTokenTypeString();
+				tokenData = cMinusScan.getTokenDataString();
+				writer.println(tokenType + "			" + tokenData);
 			}
 			
 			//Close the writer
 			writer.close();
 			
 		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
+			System.out.println("Error: file not found");
 			e1.printStackTrace();
 		} catch (UnsupportedEncodingException e1) {
-			// TODO Auto-generated catch block
+			System.out.println("Error: Unsupported file encoding");
 			e1.printStackTrace();
 		}
 		
 		catch (IOException e){
-			System.out.println("Scanner Exception: An IOException occurred while reading the input file.");
+			System.out.println("Scanner Exception: An IOException "
+					+ "occurred while reading the input file.");
+			e.printStackTrace();
+		} catch (ScannerException e) {
+			System.out.println(e.getMessage());
 			e.printStackTrace();
 		}
 	}

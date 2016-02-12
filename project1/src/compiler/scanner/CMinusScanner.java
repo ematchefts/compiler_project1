@@ -36,15 +36,126 @@ public class CMinusScanner implements Scanner {
 
 			switch (state) {
 			case START:
-				if (Character.isDigit(currentChar)) {
-					state = State.StateType.NUM;
-				}
-				switch(state){
-				case NUM:
+				if (Character.isWhitespace(currentChar)){
 					break;
 				}
+				else if (Character.isDigit(currentChar)) {
+					state = State.StateType.NUM;
+				}
+				else if (Character.isLetter(currentChar)){
+					state = State.StateType.ID;
+				}
+				else{
+					switch(currentChar){
+					case ',':
+						state = State.StateType.COMMA;
+						break;
+					case '>':
+						state = State.StateType.GREATERTHAN;
+						break;
+					case '{':
+						state = State.StateType.LEFTCURLYBRACE;
+						break;
+					case '(':
+						state = State.StateType.LEFTPAREN;
+						break;
+					case '[':
+						state = State.StateType.LEFTSQBRACKET;
+						break;
+					case '<':
+						state = State.StateType.LESSTHAN;
+						break;
+					case '-':
+						state = State.StateType.MINUS;
+						break;
+					case '*':
+						state = State.StateType.MULTIPLY;
+						break;
+					case '+':
+						state = State.StateType.PLUS;
+						break;
+					case '}':
+						state = State.StateType.RIGHTCURLYBRACE;
+						break;
+					case ')':
+						state = State.StateType.RIGHTPAREN;
+						break;
+					case ']':
+						state = State.StateType.RIGHTSQBRACKET;
+						break;
+					case ';':
+						state = State.StateType.SEMICOLON;
+						break;
+					
+					default:
+						// Something's wrong - should never get here! Need to note an error here.
+						break;
+					}
+					break;
+				}
+			case ASSIGN:
 				break;
-
+			case COMMA:
+				break;
+			case COMMENTEND:
+				break;
+			case COMMENTSTART:
+				break;
+			case DIVIDE:
+				break;
+			case DONE:
+				break;
+			case ELSE:
+				break;
+			case EQUALTO:
+				break;
+			case GREATERTHAN:
+				break;
+			case GREATERTHANEQUALTO:
+				break;
+			case ID:
+				break;
+			case IF:
+				break;
+			case INT:
+				break;
+			case LEFTCURLYBRACE:
+				break;
+			case LEFTPAREN:
+				break;
+			case LEFTSQBRACKET:
+				break;
+			case LESSTHAN:
+				break;
+			case LESSTHANEQUALTO:
+				break;
+			case MINUS:
+				break;
+			case MULTIPLY:
+				break;
+			case NOTEQUAL:
+				break;
+			case NUM:
+				break;
+			case PLUS:
+				break;
+			case RETURN:
+				break;
+			case RIGHTCURLYBRACE:
+				break;
+			case RIGHTPAREN:
+				break;
+			case RIGHTSQBRACKET:
+				break;
+			case SEMICOLON:
+				break;
+			case VOID:
+				break;
+			case WHILE:
+				break;
+			default:
+				break;
+			
 			}
 			
 			currentChar = viewNextCharacter();

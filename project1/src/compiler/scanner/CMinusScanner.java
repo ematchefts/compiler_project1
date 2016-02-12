@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -313,14 +315,33 @@ public class CMinusScanner implements Scanner {
 		
 		//declare our Token, used for writing out to lex results file
 		Token writeToken = cMinusScan.viewNextToken();
-		//TODO: Write our first token out to a lex results file
-		
+
+		//Get ready to output a lex file
 		try {
+			PrintWriter writer;
+			//Create the file
+			writer = new PrintWriter(args[0] + ".lex", "UTF-8");
+			
+			//Print the first token as a line
+			writer.println(writeToken.getTokenType().toString() + writeToken.getTokenData().toString());
+			
+			//Print all additional tokens as additional lines
 			while(br.ready()){
 				writeToken = cMinusScan.getNextToken();
-				//TODO: Write writeToken out to a lex results file
+				writer.println(writeToken.getTokenType().toString() + writeToken.getTokenData().toString());
 			}
+			
+			//Close the writer
+			writer.close();
+			
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (UnsupportedEncodingException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
+		
 		catch (IOException e){
 			System.out.println("Scanner Exception: An IOException occurred while reading the input file.");
 			e.printStackTrace();

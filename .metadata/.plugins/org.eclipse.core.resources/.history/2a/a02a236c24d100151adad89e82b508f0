@@ -14,7 +14,7 @@ public class CMinusScanner implements Scanner {
 
 	private BufferedReader inFile;
 	private Token nextToken;
-	private static final Map<String, State.StateType> keywordMap = new HashMap<String, State.StateType>();
+	private static final Map<String, State.StateType> keywordMap = new Hashmap<String, State.StateType>();
 	static {
 		keywordMap.put("else", State.StateType.ELSE);
 		keywordMap.put("if", State.StateType.IF);

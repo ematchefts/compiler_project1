@@ -14,6 +14,8 @@ public class CMinusScanner implements Scanner {
 
 	private BufferedReader inFile;
 	private Token nextToken;
+	private boolean lastCapturedWasAlphaNum;
+	
 	private static final Map<String, State.StateType> keywordMap = new HashMap<String, State.StateType>();
 	static {
 		keywordMap.put("else", State.StateType.ELSE);
@@ -26,134 +28,231 @@ public class CMinusScanner implements Scanner {
 	
 	public CMinusScanner(BufferedReader file){
 		inFile = file;
+		lastCapturedWasAlphaNum = false;
 		nextToken = scanToken();
 	}
 	
-	private Token scanToken() {
-		//index for storing into tokenString
-		int tokenStringIndex = 0;
-		
+	private Token scanToken() {		
 		//holds current token to be returned
 		Token currentToken = null;
 		
 		//current sate- always begins at START
 		StateType state = State.StateType.START;
 		
-		while (state != State.StateType.DONE) {
-			//flag to indicate save to tokenString
-			boolean save = true;
-			
-			char currentChar = getNextCharacter();
+		char currentChar = 0;
+		char nextChar = 0;
+		
+		while (state != State.StateType.DONE && state != State.StateType.ERROR) {			
+			currentChar = getNextCharacter();
+			nextChar = viewNextCharacter();
 
 			switch (state) {
 			case START:
 				if (Character.isWhitespace(currentChar)){
+					this.lastCapturedWasAlphaNum = false;
 					break;
 				}
 				else if (Character.isDigit(currentChar)) {
-					state = State.StateType.NUM;
-					currentToken = new Token(Token.TokenType.NUM_TOKEN, 0);
-				}
-				else if (Character.isLetter(currentChar)){
-					state = State.StateType.ID;
-				}
-				//change!
-				else{
-					state = State.StateType.DONE;
-					switch(currentChar){
-					case ',':
-						currentToken = new Token(Token.TokenType.COMMA_TOKEN);
-						break;
-					case '{':
-						currentToken = new Token(Token.TokenType.LEFTCURLYBRACE_TOKEN);
-						break;
-					case '(':
-						currentToken = new Token(Token.TokenType.LEFTPAREN_TOKEN);
-						break;
-					case '[':
-						currentToken = new Token(Token.TokenType.LEFTSQBRACKET_TOKEN);
-						break;
-					case '-':
-						currentToken = new Token(Token.TokenType.MINUS_TOKEN);
-						break;
-					case '*':
-						currentToken = new Token(Token.TokenType.MULTIPLY_TOKEN);
-						break;
-					case '+':
-						currentToken = new Token(Token.TokenType.PLUS_TOKEN);
-						break;
-					case '}':
-						currentToken = new Token(Token.TokenType.RIGHTCURLYBRACE_TOKEN);
-						break;
-					case ')':
-						currentToken = new Token(Token.TokenType.RIGHTPAREN_TOKEN);
-						break;
-					case ']':
-						currentToken = new Token(Token.TokenType.RIGHTSQBRACKET_TOKEN);
-						break;
-					case ';':
-						currentToken = new Token(Token.TokenType.SEMICOLON_TOKEN);
-						break;
 					
-					default:
-						// TODO: Need to note an error here.
-						break;
+					if(!this.lastCapturedWasAlphaNum){
+						currentToken = new Token(Token.TokenType.NUM_TOKEN, Character.getNumericValue(currentChar));
+						this.lastCapturedWasAlphaNum = true;
+						
+						//Check if next token is also digit - if so, enter NUM state, else enter DONE
+						if(Character.isDigit(nextChar)){
+							state = State.StateType.NUM;
+						}
+						else{
+							state = State.StateType.DONE;
+						}
+					}
+					else{
+						// TODO: lexical error!
 					}
 				}
-			case ASSIGN:
+				else if (Character.isLetter(currentChar)){
+					
+					if(!this.lastCapturedWasAlphaNum){
+						currentToken = new Token(Token.TokenType.ID_TOKEN, Character.toString(currentChar));
+						this.lastCapturedWasAlphaNum = true;
+						
+						//Check if next token is also digit - if so, enter NUM state, else enter DONE
+						if(Character.isLetter(nextChar)){
+							state = State.StateType.ID;
+						}
+						else{
+							state = State.StateType.DONE;
+						}
+					}
+					else{
+						// TODO: lexical error!
+					}
+				}
+				
+				// Special-char tokens:
+				else{
+					this.lastCapturedWasAlphaNum = false;
+					switch(currentChar){
+					// COMMENT
+					case '/':
+						if(nextChar == '*'){
+							currentChar = getNextCharacter();
+							nextChar = viewNextCharacter();
+							state = State.StateType.COMMENT;
+						}
+						else{
+							currentToken = new Token(Token.TokenType.DIVIDE_TOKEN);
+							state = State.StateType.DONE;
+						}
+						break;
+						
+					// EQUALTO
+					case '=':
+						if(nextChar == '='){
+							currentChar = getNextCharacter();
+							nextChar = viewNextCharacter();
+							currentToken = new Token(Token.TokenType.EQUALTO_TOKEN);
+							state = State.StateType.DONE;
+						}
+						else{
+							currentToken = new Token(Token.TokenType.ASSIGN_TOKEN);
+							state = State.StateType.DONE;
+						}
+						break;
+					
+					// NOTEQUAL
+					case '!':
+						if(nextChar == '='){
+							currentChar = getNextCharacter();
+							nextChar = viewNextCharacter();
+							currentToken = new Token(Token.TokenType.NOTEQUAL_TOKEN);
+							state = State.StateType.DONE;
+						}
+						else{
+							state = State.StateType.ERROR;
+						}
+						break;
+					
+					// LESSTHANEQUALTO
+					case '<':
+						if(nextChar == '='){
+							currentChar = getNextCharacter();
+							nextChar = viewNextCharacter();
+							currentToken = new Token(Token.TokenType.LESSTHANEQUALTO_TOKEN);
+							state = State.StateType.DONE;
+						}
+						else{
+							currentToken = new Token(Token.TokenType.LESSTHAN_TOKEN);
+							state = State.StateType.DONE;
+						}
+						break;
+						
+					// GREATERTHANEQUALTO
+					case '>':
+						if(nextChar == '='){
+							currentChar = getNextCharacter();
+							nextChar = viewNextCharacter();
+							currentToken = new Token(Token.TokenType.GREATERTHANEQUALTO_TOKEN);
+							state = State.StateType.DONE;
+						}
+						else{
+							currentToken = new Token(Token.TokenType.GREATERTHAN_TOKEN);
+							state = State.StateType.DONE;
+						}
+						break;
+						
+					// Single-char tokens
+					default:
+						// Because these are single-char tokens, we can assume we're DONE
+						state = State.StateType.DONE;
+						switch(currentChar){
+						case ',':
+							currentToken = new Token(Token.TokenType.COMMA_TOKEN);
+							break;
+						case '{':
+							currentToken = new Token(Token.TokenType.LEFTCURLYBRACE_TOKEN);
+							break;
+						case '(':
+							currentToken = new Token(Token.TokenType.LEFTPAREN_TOKEN);
+							break;
+						case '[':
+							currentToken = new Token(Token.TokenType.LEFTSQBRACKET_TOKEN);
+							break;
+						case '-':
+							currentToken = new Token(Token.TokenType.MINUS_TOKEN);
+							break;
+						case '*':
+							currentToken = new Token(Token.TokenType.MULTIPLY_TOKEN);
+							break;
+						case '+':
+							currentToken = new Token(Token.TokenType.PLUS_TOKEN);
+							break;
+						case '}':
+							currentToken = new Token(Token.TokenType.RIGHTCURLYBRACE_TOKEN);
+							break;
+						case ')':
+							currentToken = new Token(Token.TokenType.RIGHTPAREN_TOKEN);
+							break;
+						case ']':
+							currentToken = new Token(Token.TokenType.RIGHTSQBRACKET_TOKEN);
+							break;
+						case ';':
+							currentToken = new Token(Token.TokenType.SEMICOLON_TOKEN);
+							break;
+						
+						default:
+							// TODO: Need to note an error here.
+							break;
+						}
+					}	
+				}
 				break;
-			case COMMENTEND:
-				break;
-			case COMMENTSTART:
-				break;
-			case DIVIDE:
+			case COMMENT:
+				if(nextChar == '*'){
+					currentChar = getNextCharacter();
+					nextChar = viewNextCharacter();
+					if(nextChar == '/'){
+						currentChar = getNextCharacter();
+						nextChar = viewNextCharacter();
+						state = State.StateType.DONE;
+					}
+				}
 				break;
 			case DONE:
 				break;
-			case ELSE:
-				break;
-			case EQUALTO:
-				break;
-			case GREATERTHAN:
-				break;
-			case GREATERTHANEQUALTO:
-				break;
 			case ID:
-				break;
-			case IF:
-				break;
-			case INT:
-				break;
-			case LESSTHAN:
-				break;
-			case LESSTHANEQUALTO:
-				break;
-			case NOTEQUAL:
+				// Add the current character to the Token's numeric value
+				currentToken.setTokenData( (String)currentToken.getTokenData() + currentChar);
+				if( !Character.isLetter(nextChar) ){
+					// If next char isn't digit, we're done!
+					this.lastCapturedWasAlphaNum = true;
+					state = State.StateType.DONE;
+				}
 				break;
 			case NUM:
 				// Add the current character to the Token's numeric value
 				currentToken.setTokenData( ( (int)(currentToken.getTokenData() ) * 10) + Character.getNumericValue(currentChar));
-				// If next char isn't digit, we're done!
-				if(!Character.isDigit( this.viewNextCharacter() )){
+				if( !Character.isDigit(nextChar) ){
+					// If next char isn't digit, we're done!
+					this.lastCapturedWasAlphaNum = true;
 					state = State.StateType.DONE;
 				}
-				break;
-			case RETURN:
-				break;
-			case VOID:
-				break;
-			case WHILE:
 				break;
 			default:
 				break;
 			// TODO: Something probably happens here.
 			}
-			
-			currentChar = getNextCharacter();
 		}
 		
-		// We've hit the DONE state, so reset to START and return the Token we got
+		if(state == State.StateType.ERROR){
+			System.out.println("Lexical error: " + currentChar + "followed by " + nextChar);
+		}
+		
+		// We've hit the DONE (or ERROR) state, so reset to START and return the Token we got
 		state = State.StateType.START;
+		
+		// But first, if we say we got an ID, check against keywords.
+		
 		return currentToken;
 	}
 	
@@ -185,10 +284,8 @@ public class CMinusScanner implements Scanner {
 	@Override
 	public Token getNextToken() {
 		Token returnToken = nextToken;
-		if(nextToken.getTokenType() != Token.TokenType.EOF_TOKEN){
-			nextToken = scanToken();
-		}
-		return returnToken;
+		nextToken =  returnToken;
+		return scanToken();
 	}
 
 	@Override

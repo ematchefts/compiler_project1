@@ -22,5 +22,5 @@ public interface Scanner {
 	 * 
 	 * @return nextToken The next token in the input file
 	 */
-	public Token viewLastToken();
+	public Token viewNextToken();
 }

@@ -321,12 +321,13 @@ public class CMinusScanner implements Scanner {
 	 */
 	@Override
 	public Token getNextToken() {
+		Token returnToken = nextToken;
 		try {
 			nextToken = scanToken();
 		} catch (ScannerException e) {
 			System.out.println(e.getMessage());
 		}
-		return nextToken;
+		return returnToken;
 	}
 
 	/**
@@ -336,7 +337,7 @@ public class CMinusScanner implements Scanner {
 	 * @return nextToken The next token in the input file
 	 */
 	@Override
-	public Token viewLastToken() {
+	public Token viewNextToken() {
 		return nextToken;
 	}
 
@@ -347,8 +348,8 @@ public class CMinusScanner implements Scanner {
 	 */
 	public String getTokenTypeString() {
 		String returnString = "";
-		if (viewLastToken().getTokenType() != null) {
-			returnString = viewLastToken().getTokenType().toString();
+		if (viewNextToken().getTokenType() != null) {
+			returnString = viewNextToken().getTokenType().toString();
 		}
 		return returnString;
 	}
@@ -360,8 +361,8 @@ public class CMinusScanner implements Scanner {
 	 */
 	public String getTokenDataString() {
 		String returnString = "";
-		if (viewLastToken().getTokenData() != null) {
-			returnString = viewLastToken().getTokenData().toString();
+		if (viewNextToken().getTokenData() != null) {
+			returnString = viewNextToken().getTokenData().toString();
 		}
 		return returnString;
 	}

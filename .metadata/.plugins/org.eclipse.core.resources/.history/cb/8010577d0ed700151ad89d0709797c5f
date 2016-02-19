@@ -25,7 +25,6 @@ import java.io.IOException;
 %%
 
 %public
-%class CMinusScanner_jflex
 %implements Scanner
 
 %unicode

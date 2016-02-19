@@ -425,7 +425,11 @@ public class CMinusScanner_jflex implements Scanner {
 
   /* user code: */
   StringBuilder string = new StringBuilder();
-  Token nextToken;
+  private Token nextToken;
+  
+  	public void setNextToken(Token token){
+  		nextToken = token;
+  	}
   
   	@Override
 	public Token getNextToken() {

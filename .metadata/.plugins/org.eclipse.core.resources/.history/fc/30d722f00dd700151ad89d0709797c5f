@@ -36,7 +36,7 @@ public class FileScanRunner {
 		try {
 			// Create new CMinus Scanner
 			CMinusScanner_jflex cMinusScan = new CMinusScanner_jflex(br);
-			cMinusScan.setNextToken(cMinusScan.scanToken());
+			cMinusScan.nextToken = cMinusScan.scanToken();
 
 			// Get strings from the initial captured token
 			String tokenType = cMinusScan.getTokenTypeString();
@@ -71,6 +71,9 @@ public class FileScanRunner {
 		catch (IOException e) {
 			System.out.println("Scanner Exception: An IOException " + "occurred while reading the input file.");
 			e.printStackTrace();
+//		} catch (ScannerException e) {
+//			System.out.println(e.getMessage());
+//			e.printStackTrace();
 		}
 	}
 	

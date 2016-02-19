@@ -71,6 +71,9 @@ public class FileScanRunner {
 		catch (IOException e) {
 			System.out.println("Scanner Exception: An IOException " + "occurred while reading the input file.");
 			e.printStackTrace();
+//		} catch (ScannerException e) {
+//			System.out.println(e.getMessage());
+//			e.printStackTrace();
 		}
 	}
 	

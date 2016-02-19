@@ -40,11 +40,7 @@ import java.io.IOException;
 
 %{
   StringBuilder string = new StringBuilder();
-  private Token nextToken;
-  
-  	public void setNextToken(Token token){
-  		nextToken = token;
-  	}
+  Token nextToken;
   
   	@Override
 	public Token getNextToken() {

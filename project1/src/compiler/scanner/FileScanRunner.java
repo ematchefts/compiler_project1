@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 
 public class FileScanRunner {
@@ -29,12 +30,13 @@ public class FileScanRunner {
 		}
 
 		// declare BufferedReader
-		BufferedReader br = new BufferedReader(fileread);
+		Reader br = new BufferedReader(fileread);
 
 		// Get ready to scan and output a lex file
 		try {
 			// Create new CMinus Scanner
 			CMinusScanner_jflex cMinusScan = new CMinusScanner_jflex(br);
+			cMinusScan.nextToken = cMinusScan.scanToken();
 
 			// Get strings from the initial captured token
 			String tokenType = cMinusScan.getTokenTypeString();
@@ -48,7 +50,7 @@ public class FileScanRunner {
 			writer.println(tokenType + "			" + tokenData);
 
 			// Print all additional tokens as additional lines
-			while (br.ready()) {
+			while (cMinusScan.viewNextToken().getTokenType() != Token.TokenType.EOF_TOKEN) {
 				cMinusScan.getNextToken();
 				tokenType = cMinusScan.getTokenTypeString();
 				tokenData = cMinusScan.getTokenDataString();

@@ -36,6 +36,12 @@ import java.io.IOException;
 %function scanToken
 %type Token
 
+%init{
+  this.zzReader = in;
+  nextToken = scanToken();
+%init}
+
+%initthrow IOException
 
 %{
   StringBuilder string = new StringBuilder();
@@ -62,6 +68,32 @@ import java.io.IOException;
 	@Override
 	public Token viewNextToken() {
 		return nextToken;
+	}
+	
+	/**
+	 * This function returns the string type value of the last token read
+	 * 
+	 * @return returnString The string value of the last token read
+	 */
+	public String getTokenTypeString() {
+		String returnString = "";
+		if (viewNextToken().getTokenType() != null) {
+			returnString = viewNextToken().getTokenType().toString();
+		}
+		return returnString;
+	}
+
+	/**
+	 * This function returns the string data value of the last token read
+	 * 
+	 * @return returnstring the string value of the last token read
+	 */
+	public String getTokenDataString() {
+		String returnString = "";
+		if (viewNextToken().getTokenData() != null) {
+			returnString = viewNextToken().getTokenData().toString();
+		}
+		return returnString;
 	}
 
   /** 

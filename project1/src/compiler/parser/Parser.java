@@ -71,6 +71,10 @@ public class Parser {
 		return scanner.getNextToken();
 	}
 	
+	public Token viewNextToken(){
+		return scanner.viewNextToken();
+	}
+	
 	public static void main(String args[]){
 		
 		Parser parser = new Parser(args[0]);

@@ -18,6 +18,7 @@ public class Args {
 		
 		Token nextToken = parser.viewNextToken();
 		while (nextToken.getTokenType() == Token.TokenType.COMMA_TOKEN){
+			parser.advanceToken();
 			exp = Expression.parseExpression();
 			el.add(exp);
 		}

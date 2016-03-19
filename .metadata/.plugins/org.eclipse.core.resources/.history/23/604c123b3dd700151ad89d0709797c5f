@@ -27,6 +27,7 @@ import java.io.IOException;
 %public
 %class CMinusScanner_jflex
 %implements Scanner
+%extends ScannerException
 
 %unicode
 
@@ -36,8 +37,7 @@ import java.io.IOException;
 %function scanToken
 %type Token
 
-%initthrow IOException
-%yylexthrow ScannerException
+%initthrow IOException, ScannerException
 
 %{
   StringBuilder string = new StringBuilder();
@@ -48,7 +48,7 @@ import java.io.IOException;
   	}
   
   	@Override
-	public Token getNextToken(){
+	public Token getNextToken() {
 		Token returnToken = nextToken;
 		try {
 			if(nextToken.getTokenType() != Token.TokenType.EOF_TOKEN){
@@ -57,9 +57,6 @@ import java.io.IOException;
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
 			e.printStackTrace();
-		} catch (ScannerException s) {
-			System.out.println(s.getMessage());
-			s.printStackTrace();
 		}
 		return returnToken;
 	}
@@ -116,7 +113,7 @@ Comment = {TraditionalComment}
 TraditionalComment = "/*" [^*] ~"*/" | "/*" "*"+ "/"
 
 /* identifiers */
-Identifier = [:jletter:]+
+Identifier = [:jletter:]*
 
 /* integer literals */
 DecIntegerLiteral = 0 | [1-9][0-9]*

@@ -1,0 +1,17 @@
+package compiler.parser;
+
+import java.util.ArrayList;
+
+public class Args {
+	ArrayList<Expression> exprList = new ArrayList<Expression>();
+
+	public Args(Expression exp){
+		exprList.add(exp);
+	}
+	
+	public Args parseArgs(){
+		Expression exp = parseExpression();
+		return null;
+		
+	}
+}

@@ -11,7 +11,7 @@ public class Args {
 		exprList = el;
 	}
 	
-	public static Args parseArg(Parser parser) {
+	public static Args parseArg(Parser parser) throws ParserException{
 		Expression exp = Expression.parseExpression();
 		ArrayList<Expression> el = new ArrayList<Expression>();
 		el.add(exp);

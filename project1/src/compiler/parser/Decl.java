@@ -13,7 +13,8 @@ public class Decl {
 		prime = primer;
 	}
 	
-	public static Decl parseDecl(Parser parser) throws ParserException{
+	public static Decl parseDecl(Parser parser) 
+			throws ParserException{
 		Token.TokenType type = parser.getCurrentToken().getTokenType();
 		switch(type){
 		case INT_TOKEN:

@@ -20,7 +20,9 @@ public class Factor {
 		num = n;
 	}
 
-	public static Factor parseFactor(Parser parser){
+	public static Factor parseFactor(Parser parser) 
+			throws ParserException{
+		
 		switch(parser.getCurrentToken().getTokenType()){
 			case LEFTPAREN_TOKEN:
 				parser.advanceToken();

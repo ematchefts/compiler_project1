@@ -77,9 +77,9 @@ public class Parser {
 	}
 	
 	public void matchToken(Token.TokenType matchTokenType) throws ParserException{
-		advanceToken();
-		if (currentToken.getTokenType() != matchTokenType){
-			throw new ParserException();
+		if (getNextToken().getTokenType() != matchTokenType){
+			throw new ParserException("Expected " + matchTokenType.toString() + 
+					" but found " + getCurrentToken().getTokenType().toString());
 		}
 	}
 

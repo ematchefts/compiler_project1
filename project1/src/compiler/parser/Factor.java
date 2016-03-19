@@ -42,7 +42,7 @@ public class Factor {
 				factor = new Factor ((Integer) currentToken.getTokenData());
 				return factor;
 			default:
-				throw new ParserException();
+				throw new ParserException("Parse exception occured while parsing factor");
 		}
 		
 	}

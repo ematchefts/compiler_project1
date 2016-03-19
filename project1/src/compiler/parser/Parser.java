@@ -68,7 +68,8 @@ public class Parser {
 	}
 	
 	public Token getNextToken(){
-		return scanner.getNextToken();
+		currentToken = scanner.getNextToken(); 
+		return currentToken;
 	}
 	
 	public Token viewNextToken(){
@@ -80,6 +81,10 @@ public class Parser {
 		if (currentToken.getTokenType() != matchTokenType){
 			throw new ParserException();
 		}
+	}
+
+	public boolean hasNextToken(){
+		return (viewNextToken().getTokenType() != Token.TokenType.EOF_TOKEN);
 	}
 	
 	public static void main(String args[]){

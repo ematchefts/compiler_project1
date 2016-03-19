@@ -37,6 +37,7 @@ import java.io.IOException;
 %type Token
 
 %initthrow IOException
+%yylexthrow ScannerException
 
 %{
   StringBuilder string = new StringBuilder();
@@ -47,7 +48,7 @@ import java.io.IOException;
   	}
   
   	@Override
-	public Token getNextToken() {
+	public Token getNextToken(){
 		Token returnToken = nextToken;
 		try {
 			if(nextToken.getTokenType() != Token.TokenType.EOF_TOKEN){
@@ -56,6 +57,9 @@ import java.io.IOException;
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
 			e.printStackTrace();
+		} catch (ScannerException s) {
+			System.out.println(s.getMessage());
+			s.printStackTrace();
 		}
 		return returnToken;
 	}
@@ -112,10 +116,13 @@ Comment = {TraditionalComment}
 TraditionalComment = "/*" [^*] ~"*/" | "/*" "*"+ "/"
 
 /* identifiers */
-Identifier = [:jletter:][:jletterdigit:]*
+Identifier = [:jletter:]+
 
 /* integer literals */
 DecIntegerLiteral = 0 | [1-9][0-9]*
+
+/* Lexical errors*/
+LexError = ([:jletter:][0-9]) | ([0-9][:jletter])
 
 
 %state STRING, CHARLITERAL
@@ -171,6 +178,9 @@ DecIntegerLiteral = 0 | [1-9][0-9]*
 
   /* identifiers */ 
   {Identifier}                   { return new Token(Token.TokenType.ID_TOKEN, yytext()); }  
+  
+  /* Lexical Error */
+  {LexError}                     {throw new ScannerException("Lexical error: Cannot have one IDENTIFIER, "+ "NUMBER, or keyword after another without " + "delimiters in between!"); }
 }
 
 /* error fallback */

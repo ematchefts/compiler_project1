@@ -36,11 +36,7 @@ public class FileScanRunner {
 		try {
 			// Create new CMinus Scanner
 			CMinusScanner_jflex cMinusScan = new CMinusScanner_jflex(br);
-			try {
-				cMinusScan.setNextToken(cMinusScan.scanToken());
-			} catch (ScannerException e) {
-				e.printStackTrace();
-			}
+			cMinusScan.setNextToken(cMinusScan.scanToken());
 
 			// Get strings from the initial captured token
 			String tokenType = cMinusScan.getTokenTypeString();

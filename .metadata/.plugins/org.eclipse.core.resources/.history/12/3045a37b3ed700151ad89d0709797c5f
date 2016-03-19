@@ -59,7 +59,7 @@ import java.io.IOException;
 			e.printStackTrace();
 		} catch (ScannerException s) {
 			System.out.println(s.getMessage());
-			s.printStackTrace();
+			e.printStackTrace();
 		}
 		return returnToken;
 	}
@@ -116,7 +116,7 @@ Comment = {TraditionalComment}
 TraditionalComment = "/*" [^*] ~"*/" | "/*" "*"+ "/"
 
 /* identifiers */
-Identifier = [:jletter:]+
+Identifier = [:jletter:]*
 
 /* integer literals */
 DecIntegerLiteral = 0 | [1-9][0-9]*

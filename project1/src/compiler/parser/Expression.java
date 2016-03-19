@@ -1,5 +1,8 @@
 package compiler.parser;
 
-public class Expression {
-
+public abstract class Expression {
+		public Expression parseExpression(){
+			return null;
+			
+		}
 }

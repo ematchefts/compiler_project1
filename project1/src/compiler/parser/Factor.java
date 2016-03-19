@@ -6,13 +6,15 @@ public class Factor {
 	
 	private Expression expression;
 	private VarCall varcall;
+	private String id;
 	private Integer num;
 	
 	public Factor (Expression exp){
 		expression = exp;
 	}
 	
-	public Factor (VarCall vc){
+	public Factor (String ident, VarCall vc){
+		id = ident;
 		varcall = vc;
 	}
 	
@@ -24,6 +26,7 @@ public class Factor {
 			throws ParserException{
 		
 		Factor factor;
+		Token currentToken;
 		
 		switch(parser.getCurrentToken().getTokenType()){
 			case LEFTPAREN_TOKEN:
@@ -33,12 +36,14 @@ public class Factor {
 				factor = new Factor (exp);
 				return factor;
 			case ID_TOKEN:
+				currentToken = parser.getNextToken();
+				String ident = (String) currentToken.getTokenData();
 				parser.advanceToken();
 				VarCall vc = VarCall.parseVarCall();
-				factor = new Factor (vc);
+				factor = new Factor (ident, vc);
 				return factor;
 			case NUM_TOKEN:
-				Token currentToken = parser.getNextToken();
+				currentToken = parser.getNextToken();
 				factor = new Factor ((Integer) currentToken.getTokenData());
 				return factor;
 			default:

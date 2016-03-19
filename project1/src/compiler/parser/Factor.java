@@ -26,9 +26,9 @@ public class Factor {
 			throws ParserException{
 		
 		Factor factor;
-		Token currentToken;
+		Token currentToken = parser.getCurrentToken();
 		
-		switch(parser.getCurrentToken().getTokenType()){
+		switch(currentToken.getTokenType()){
 			case LEFTPAREN_TOKEN:
 				parser.advanceToken();
 				Expression exp = Expression.parseExpression(parser);
@@ -36,14 +36,12 @@ public class Factor {
 				factor = new Factor (exp);
 				return factor;
 			case ID_TOKEN:
-				currentToken = parser.getNextToken();
 				String ident = (String) currentToken.getTokenData();
 				parser.advanceToken();
 				VarCall vc = VarCall.parseVarCall();
 				factor = new Factor (ident, vc);
 				return factor;
 			case NUM_TOKEN:
-				currentToken = parser.getNextToken();
 				factor = new Factor ((Integer) currentToken.getTokenData());
 				return factor;
 			default:

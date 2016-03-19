@@ -12,21 +12,18 @@ import compiler.scanner.*;
 
 public class Parser {
 	
-	private Token currentToken;
+	private Token currentToken;	
+	private Scanner scanner;
 	
-	public Token getCurrentToken(){
-		return currentToken;
-	}
-	
-	public static void main(String args[]){
+	Parser(String filename){
 		
 		// input file from argument and create new FileReader
-		File file = new File(args[0]);
+		File file = new File(filename);
 		FileReader fileread = null;
 		try {
 			fileread = new FileReader(file);
 		} catch (FileNotFoundException e) {
-			System.out.println("Scanner Exception: Unable to read file.");
+			System.out.println("Error: Unable to read file.");
 			e.printStackTrace();
 		}
 
@@ -44,8 +41,8 @@ public class Parser {
 			}
 
 			// Get strings from the initial captured token
-			String tokenType = cMinusScan.getTokenTypeString();
-			String tokenData = cMinusScan.getTokenDataString();
+			currentToken.setTokenType(cMinusScan.getTokenType());
+			currentToken.setTokenData(cMinusScan.getTokenData());
 		}
 		
 		catch (FileNotFoundException e1) {
@@ -54,12 +51,29 @@ public class Parser {
 		} catch (UnsupportedEncodingException e1) {
 			System.out.println("Error: Unsupported file encoding");
 			e1.printStackTrace();
-		}
-
-		catch (IOException e) {
-			System.out.println("Scanner Exception: An IOException " + "occurred while reading the input file.");
+		} catch (IOException e) {
+			System.out.println("Scanner Exception: An IOException " 
+					+ "occurred while reading the input file.");
 			e.printStackTrace();
 		}
+
+	}
+	
+	public Token getCurrentToken(){
+		return currentToken;
+	}
+	
+	public void advanceToken(){
+		getNextToken();
+	}
+	
+	public Token getNextToken(){
+		return scanner.getNextToken();
+	}
+	
+	public static void main(String args[]){
+		
+		Parser parser = new Parser(args[0]);
 		
 	}
 	

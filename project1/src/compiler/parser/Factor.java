@@ -31,7 +31,7 @@ public class Factor {
 		switch(parser.getCurrentToken().getTokenType()){
 			case LEFTPAREN_TOKEN:
 				parser.advanceToken();
-				Expression exp = Expression.parseExpression();
+				Expression exp = Expression.parseExpression(parser);
 				parser.matchToken(Token.TokenType.RIGHTPAREN_TOKEN);
 				factor = new Factor (exp);
 				return factor;

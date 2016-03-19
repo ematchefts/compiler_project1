@@ -12,4 +12,6 @@ public class BinaryExpression {
 		rightSide = rs;
 		operation = op;
 	}
+	
+	
 }

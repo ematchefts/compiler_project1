@@ -20,15 +20,5 @@ public class Factor {
 		num = n;
 	}
 
-	public static Factor parseFactor(Parser parser){
-		switch(parser.getCurrentToken().getTokenType()){
-			case LEFTPAREN_TOKEN:
-				parser.advanceToken();
-				Expression exp = Expression.parseExpression();
-		
-		}
-		return null;
-		
-	}
 
 }

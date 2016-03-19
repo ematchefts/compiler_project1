@@ -75,13 +75,6 @@ public class Parser {
 		return scanner.viewNextToken();
 	}
 	
-	public void matchToken(Token.TokenType matchTokenType) throws ParserException{
-		advanceToken();
-		if (currentToken.getTokenType() != matchTokenType){
-			throw new ParserException();
-		}
-	}
-	
 	public static void main(String args[]){
 		
 		Parser parser = new Parser(args[0]);

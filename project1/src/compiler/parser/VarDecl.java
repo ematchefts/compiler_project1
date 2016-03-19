@@ -1,23 +1,13 @@
 package compiler.parser;
 
-import java.util.ArrayList;
-
 public class VarDecl extends Decl {
 	
-	private String id;
-	private ArrayList<Integer> dimensions;
-	
-	VarDecl(String identifier){
-		id = identifier;
+	VarDecl(String identifier, VarPFunP primer){
+		super(identifier, primer);
 	}
-	
-	VarDecl(String identifier, ArrayList<Integer> dims){
-		id = identifier;
-		dimensions = dims;
-	}
-	
 	
 	public static VarDecl parseVarDecl(Parser parser){
-		
+		String id = (String) parser.getNextToken().getTokenData();
+		return new VarDecl(id, VarPFunP.parseVarPFunP(parser));
 	}
 }

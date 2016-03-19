@@ -4,7 +4,7 @@ import compiler.scanner.Token;
 
 public abstract class Decl {
 	
-	public static Decl parseDecl(Parser parser) throws ScannerException{
+	public static Decl parseDecl(Parser parser) throws ParserException{
 		Token.TokenType type = parser.getCurrentToken().getTokenType();
 		switch(type){
 		case INT_TOKEN:
@@ -12,7 +12,7 @@ public abstract class Decl {
 		case VOID_TOKEN:
 			return new FunDecl();
 		default:
-			throw new ScannerException();
+			throw new ParserException();
 		}
 
 	}

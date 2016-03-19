@@ -437,11 +437,7 @@ public class CMinusScanner_jflex implements Scanner {
 	 * @return returnString The string value of the last token read
 	 */
 	public String getTokenTypeString() {
-		String returnString = "";
-		if (viewNextToken().getTokenType() != null) {
-			returnString = viewNextToken().getTokenType().toString();
-		}
-		return returnString;
+		return getTokenType().toString();
 	}
 
 	/**
@@ -451,13 +447,27 @@ public class CMinusScanner_jflex implements Scanner {
 	 */
 	public String getTokenDataString() {
 		String returnString = "";
-		if (viewNextToken().getTokenData() != null) {
-			returnString = viewNextToken().getTokenData().toString();
+		if (getTokenData() != null) {
+			returnString = getTokenData().toString();
 		}
 		return returnString;
 	}
 	
+	public Token.TokenType getTokenType(){
+		Token.TokenType returnType = Token.TokenType.EOF_TOKEN;
+		if (viewNextToken().getTokenType() != null) {
+			returnType = viewNextToken().getTokenType();
+		}
+		return returnType;
+	}
 	
+	public Object getTokenData() {
+		Object returnData = null;
+		if (viewNextToken().getTokenData() != null) {
+			returnData = viewNextToken().getTokenData();
+		}
+		return returnData;
+	}
 
 
 

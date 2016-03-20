@@ -40,6 +40,7 @@ public class Expression {
 			case LEFTPAREN_TOKEN:
 				Expression innerExpression = Expression.parseExpression(parser);
 				sep = SimpleExpressionP.parseSimpleExpresionP(parser);
+				parser.matchToken(Token.TokenType.RIGHTPAREN_TOKEN);
 				expression = new Expression (innerExpression, sep);
 				return expression;
 			case ID_TOKEN:

@@ -12,14 +12,14 @@ public class Args {
 	}
 	
 	public static Args parseArg(Parser parser) throws ParserException{
-		Expression exp = Expression.parseExpression();
+		Expression exp = Expression.parseExpression(parser);
 		ArrayList<Expression> el = new ArrayList<Expression>();
 		el.add(exp);
 		
 		Token nextToken = parser.viewNextToken();
 		while (nextToken.getTokenType() == Token.TokenType.COMMA_TOKEN){
 			parser.advanceToken();
-			exp = Expression.parseExpression();
+			exp = Expression.parseExpression(parser);
 			el.add(exp);
 		}
 		

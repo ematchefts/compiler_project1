@@ -1,0 +1,27 @@
+package compilerproject2;
+
+import java.util.*;
+
+/**
+ *
+ * @author Michael
+ */
+public class CallExpr extends Expression {
+
+    private String call;
+    private ArrayList<Expression> args;
+
+    public CallExpr(String c, ArrayList<Expression> a) {
+        call = c;
+        args = a;
+    }
+
+    @Override
+    public void print(String w) {
+        System.out.println(w + "call: " + call);
+        System.out.println(w + "    " + "params:");
+        while (!args.isEmpty()) {
+            args.remove(0).print(w + "    ");
+        }
+    }
+}

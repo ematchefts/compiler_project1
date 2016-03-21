@@ -1,0 +1,20 @@
+package compiler.parser;
+
+
+public class AssignExpr extends Expression {
+
+    private VarExpr assignto;
+    private Expression assignfrom;
+
+    public AssignExpr(VarExpr to, Expression from) {
+        assignto = to;
+        assignfrom = from;
+    }
+
+    @Override
+    public void print(String x) {
+        System.out.println(x + "=");
+        assignto.print(x + "    ");
+        assignfrom.print(x + "    ");
+    }
+}

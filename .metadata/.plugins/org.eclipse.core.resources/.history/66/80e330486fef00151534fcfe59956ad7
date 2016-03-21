@@ -1,0 +1,17 @@
+
+package compiler.parser;
+
+/**
+ *
+ * @author Michael
+ */
+public abstract class Declarations {
+    protected Token.TokenType typespec;
+    protected String id;   
+    
+    public Declarations(Token.TokenType ts, String s){
+        typespec = ts;
+        id = s;
+    }
+    public abstract void print(String w);
+}

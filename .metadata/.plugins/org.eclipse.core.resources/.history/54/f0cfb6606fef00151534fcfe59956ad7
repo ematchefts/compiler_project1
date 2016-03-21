@@ -1,0 +1,22 @@
+package compilerproject2;
+
+/**
+ *
+ * @author Michael
+ */
+public class ExpressionStatement extends Statement {
+
+    private Expression e;
+
+    public ExpressionStatement(Expression e) {
+        this.e = e;
+    }
+
+    @Override
+    public void print(String w) {
+        System.out.println(w + "expr stmt: ");
+        if (e != null) {
+            e.print(w + "    ");
+        }
+    }
+}

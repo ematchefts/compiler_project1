@@ -1,0 +1,30 @@
+package compilerproject2;
+
+/**
+ *
+ * @author Michael
+ */
+public class IfStatement extends Statement {
+
+    private Expression e;
+    private Statement s;
+    private Statement elseStatement;
+
+    public IfStatement(Expression e, Statement s, Statement elseStatement) {
+        this.e = e;
+        this.s = s;
+        this.elseStatement = elseStatement;
+    }
+
+    @Override
+    public void print(String w) {
+        System.out.println(w + "if (");
+        e.print(w + "    ");
+        System.out.print(w + ")\n" + w + "then:\n");
+        s.print(w + "    ");
+        if (elseStatement != null) {
+            System.out.println(w + "else:");
+            elseStatement.print(w + "    ");
+        }
+    }
+}

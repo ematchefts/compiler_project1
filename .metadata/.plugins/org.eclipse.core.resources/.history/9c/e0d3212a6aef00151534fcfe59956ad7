@@ -1,0 +1,77 @@
+package compilerproject2;
+
+/**
+ *
+ * @author Michael
+ */
+public class Token {
+
+    public enum TokenType {
+
+        ELSE,
+        IF,
+        INT,
+        RETURN,
+        VOID,
+        WHILE,
+        PLUS,
+        MINUS,
+        STAR,
+        SLASH,
+        LESSTHAN,
+        LESSTHANEQUALTO,
+        GREATERTHAN,
+        GREATERTHANEQUALTO,
+        COMPARE,
+        NOTEQUAL,
+        ASSIGN,
+        SEMICOLON,
+        COMMA,
+        LEFTPAREN,
+        RIGHTPAREN,
+        LEFTSQBRACKET,
+        RIGHTSQBRACKET,
+        LEFTBRACE,
+        RIGHTBRACE,
+        IDENT,
+        NUM,
+        EOF,
+        ERROR,
+        // Used for comments and white space.
+        UNPRINTED
+
+    }
+    private TokenType tokenType;
+    private Object tokenData;
+    private String identifierName;
+
+    public Token(TokenType type) {
+        this(type, null, "");
+    }
+
+    public Token(TokenType type, Object data) {
+        this(type, data, "");
+    }
+
+    public Token(TokenType type, Object data, String name) {
+        tokenType = type;
+        tokenData = data;
+        identifierName = name;
+    }
+
+    public Object getTokenData() {
+        return tokenData;
+    }
+
+    public void setTokenData(Object o) {
+        tokenData = o;
+    }
+
+    public TokenType getTokenType() {
+        return tokenType;
+    }
+    
+    public void setTokenType(Token.TokenType t){
+        tokenType = t;
+    }
+}

@@ -1,0 +1,28 @@
+package compiler.parser;
+
+/**
+ *
+ * @author Michael
+ */
+public class VarDeclaration extends Decl {
+    private Integer optional;
+    
+    public VarDeclaration(String s, Integer optional){
+        super(Token.TokenType.INT, s);
+        this.optional = optional;
+    }
+    
+    public VarDeclaration(String s){
+        super(Token.TokenType.INT, s);
+        this.optional = null;
+    }
+    
+    @Override
+    public void print(String w){
+        if(optional == null){
+            System.out.println(w + "int " + id + ";");
+        }else{
+            System.out.println(w + "int " + id + "[" + optional + "];");
+        }
+    }
+}

@@ -1,0 +1,25 @@
+package compilerproject2;
+
+/**
+ *
+ * @author Michael
+ */
+public class WhileStatement extends Statement {
+
+    private Expression e;
+    private Statement st;
+
+    public WhileStatement(Expression e, Statement st) {
+        this.e = e;
+        this.st = st;
+    }
+
+    @Override
+    public void print(String w) {
+        System.out.println(w + "while(");
+        e.print(w + "    ");
+        System.out.println(w + ")");
+        System.out.println(w + "do:");
+        st.print(w + "    ");
+    }
+}

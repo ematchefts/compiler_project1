@@ -1,0 +1,30 @@
+package compilerproject2;
+
+import java.util.*;
+
+/**
+ *
+ * @author Michael
+ */
+public class FunDecl extends Decl {
+
+    private ArrayList<Param> params;
+    private CompoundStatement cs;
+
+    public FunDecl(Token.TokenType typespec, String id, ArrayList<Param> ps, CompoundStatement cs) {
+        super(typespec, id);
+        params = ps;
+        this.cs = cs;
+    }
+
+    @Override
+    public void print(String w) {
+        System.out.println(w + "function " + id + " returns " + typespec);
+        System.out.println(w + "    " + "params:");
+        while (!params.isEmpty()) {
+            params.remove(0).print(w + "        ");
+            System.out.println();
+        }
+        cs.print(w + "    ");
+    }
+}

@@ -1,0 +1,23 @@
+package compilerproject2;
+
+/**
+ *
+ * @author Michael
+ */
+public class Param {
+
+    private final String id;
+    private final boolean hasBrackets;
+
+    public Param(String id, boolean hasBrackets) {
+        this.id = id;
+        this.hasBrackets = hasBrackets;
+    }
+
+    public void print(String w) {
+        System.out.print(w + id);
+        if (hasBrackets) {
+            System.out.print("[]");
+        }
+    }
+}

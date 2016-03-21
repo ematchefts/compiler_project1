@@ -1,0 +1,23 @@
+package compilerproject2;
+
+/**
+ *
+ * @author Michael
+ */
+public class NumExpr extends Expression {
+
+    private int num;
+
+    public NumExpr(int n) {
+        num = n;
+    }
+
+    public int getNum() {
+        return num;
+    }
+
+    @Override
+    public void print(String w) {
+        System.out.print(w + num + "\n");
+    }
+}

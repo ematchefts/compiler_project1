@@ -49,16 +49,91 @@ public class CMinusParser implements Parser {
     	return scan.viewNextToken();
     }
     
-    private void matchToken(Token.TokenType matchType) throws ParserException {
-    	if(advanceToken().getTokenType() != matchType){
+    private Token matchToken(Token.TokenType matchType) throws ParserException {
+    	if(nextToken.getTokenType() != matchType){
     		throw new ParserException(matchType, nextToken.getTokenType());
+    	}
+    	else{
+    		Token returnToken = nextToken;
+    		advanceToken();
+    		return returnToken;
     	}
     }
     
-    private void matchFollowToken(Token.TokenType matchType) throws ParserException {
-    	if(viewNextToken().getTokenType() != matchType){
+    private Token matchTokenSet(Token.TokenType[] matchArray) throws ParserException{
+    	if( !tokenTypeInArray(nextToken.getTokenType(), matchArray) ){
+    		throw new ParserException(matchArray, nextToken.getTokenType());
+    	}
+    	else{
+    		Token returnToken = nextToken;
+    		advanceToken();
+    		return returnToken;
+    	}
+    }
+    
+    private Token matchTokenNoAdvance(Token.TokenType matchType) throws ParserException{
+    	if(nextToken.getTokenType() != matchType){
     		throw new ParserException(matchType, nextToken.getTokenType());
     	}
+    	else{
+    		return nextToken;
+    	}
+    }
+    
+    private Token matchTokenSetNoAdvance(Token.TokenType[] matchArray) throws ParserException{
+    	if( !tokenTypeInArray(nextToken.getTokenType(), matchArray) ){
+    		throw new ParserException(matchArray, nextToken.getTokenType());
+    	}
+    	else{
+    		return nextToken;
+    	}
+    }
+    
+    private Token matchFollowToken(Token.TokenType matchType) throws ParserException {
+    	if(advanceToken().getTokenType() != matchType){
+    		throw new ParserException(matchType, nextToken.getTokenType());
+    	}
+    	else{
+    		return nextToken;
+    	}
+    }
+    
+    private Token matchFollowTokenNoAdvance(Token.TokenType matchType) throws ParserException {
+    	Token returnToken = viewNextToken(); 
+    	if(returnToken.getTokenType() != matchType){
+    		throw new ParserException(matchType, nextToken.getTokenType());
+    	}
+    	else{
+    		return returnToken;
+    	}
+    }
+    
+    private Token matchFollowSet(Token.TokenType[] matchArray) throws ParserException{
+    	if( !tokenTypeInArray(viewNextToken().getTokenType(), matchArray) ){
+    		throw new ParserException(matchArray, nextToken.getTokenType());
+    	}
+    	else{
+    		return advanceToken();
+    	}
+    }
+    
+    private Token matchFollowSetNoAdvance(Token.TokenType[] matchArray) throws ParserException{
+    	Token returnToken = viewNextToken();
+    	if( !tokenTypeInArray(returnToken.getTokenType(), matchArray) ){
+    		throw new ParserException(matchArray, nextToken.getTokenType());
+    	}
+    	else{
+    		return returnToken;
+    	}
+    }
+    
+    private boolean tokenTypeInArray(Token.TokenType toCheck, Token.TokenType[] array){
+    	for(Token.TokenType pattern: array){
+    		if(toCheck == pattern){
+    			return true;
+    		}
+    	}
+    	return false;
     }
 
     @Override
@@ -80,14 +155,12 @@ public class CMinusParser implements Parser {
         
         switch (nextType) {
             case INT_TOKEN:
-            	this.matchToken(Token.TokenType.ID_TOKEN);
+            	this.matchFollowToken(Token.TokenType.ID_TOKEN);
                 id = nextToken.getTokenData().toString();
-                advanceToken();
                 return parseDeclPrime(id);
             case VOID_TOKEN:
-            	this.matchToken(Token.TokenType.ID_TOKEN);
+            	matchFollowToken(Token.TokenType.ID_TOKEN);
                 id = nextToken.getTokenData().toString();
-                advanceToken();
                 return parseFunDecl(nextType, id);
             default:
             	throw new ParserException(new Token.TokenType[]{
@@ -117,12 +190,12 @@ public class CMinusParser implements Parser {
     	switch(nextType){
     	case LEFTSQBRACKET_TOKEN:
             
-            matchToken(Token.TokenType.NUM_TOKEN);
+            matchFollowToken(Token.TokenType.NUM_TOKEN);
             int num = (int) nextToken.getTokenData();
             
-            matchToken(Token.TokenType.RIGHTSQBRACKET_TOKEN);
-            matchToken(Token.TokenType.SEMICOLON_TOKEN);
-            advanceToken();
+            matchFollowToken(Token.TokenType.RIGHTSQBRACKET_TOKEN);
+            matchFollowToken(Token.TokenType.SEMICOLON_TOKEN);
+            
             return new VarDeclaration(id, num);
             
         case SEMICOLON_TOKEN:
@@ -142,60 +215,56 @@ public class CMinusParser implements Parser {
     }
 
     private FunDeclaration parseFunDeclPrime(Token.TokenType typeSpec, String id) throws ParserException {
-        if (nextType == Token.TokenType.LEFTPAREN_TOKEN) {
-            advanceToken();
-            ArrayList<Param> params = parseParams();
-            if (nextType == Token.TokenType.RIGHTPAREN_TOKEN) {
-                this.matchToken(Token.TokenType.LEFTCURLYBRACE_TOKEN);
-                CompoundStatement cs = parseCompoundStmt();
-                return new FunDeclaration(typeSpec, id, params, cs);
-            } else {
-                throw new ParserException(Token.TokenType.LEFTPAREN_TOKEN, nextType, FunDeclaration.class);
-            }
-        } else {
-        	throw new ParserException(Token.TokenType.LEFTPAREN_TOKEN, nextType, FunDeclaration.class);
-        }
+        matchToken(Token.TokenType.LEFTPAREN_TOKEN);
+        ArrayList<Param> params = parseParams();
+        matchToken(Token.TokenType.RIGHTPAREN_TOKEN);
+        matchFollowToken(Token.TokenType.LEFTCURLYBRACE_TOKEN);
+        CompoundStatement cs = parseCompoundStmt();
+        return new FunDeclaration(typeSpec, id, params, cs);
     }
 
     private ArrayList<Param> parseParams() throws ParserException {
         ArrayList<Param> alp = new ArrayList<Param>();
         //advanceToken();
-        if (nextType == Token.TokenType.VOID_TOKEN) {
+        switch(nextType){
+        case VOID_TOKEN:
             advanceToken();
             return alp;
+
+        case INT_TOKEN:
+	        alp.add(parseParam());
+	        while (nextType != Token.TokenType.RIGHTPAREN_TOKEN) {
+	            alp.add(parseParam());
+	        }
+	        return alp;
+        default:
+        	throw new ParserException(new Token.TokenType[]{
+        			Token.TokenType.VOID_TOKEN, 
+        			Token.TokenType.INT_TOKEN}, nextType);
         }
-        alp.add(parseParam());
-        while (nextType != Token.TokenType.RIGHTPAREN_TOKEN) {
-            alp.add(parseParam());
-        }
-        return alp;
     }
 
     private Param parseParam() throws ParserException {
-        Param p;
-        if (nextType == Token.TokenType.INT_TOKEN) {
-            matchToken(Token.TokenType.ID_TOKEN);
-            String id = nextToken.getTokenData().toString();
+        matchToken(Token.TokenType.INT_TOKEN);
+        matchTokenNoAdvance(Token.TokenType.ID_TOKEN);
+        String id = nextToken.getTokenData().toString();
+        advanceToken();
+        if (nextType == Token.TokenType.LEFTSQBRACKET_TOKEN) {
             advanceToken();
-            if (nextType == Token.TokenType.LEFTSQBRACKET_TOKEN) {
+            if (nextType == Token.TokenType.RIGHTSQBRACKET_TOKEN) {
                 advanceToken();
-                if (nextType == Token.TokenType.RIGHTSQBRACKET_TOKEN) {
-                    advanceToken();
-                    return new Param(id, true);
-                } else {
-                    throw new ParserException(Token.TokenType.RIGHTSQBRACKET_TOKEN, nextType, Param.class);
-                }
-            } else if (nextType == Token.TokenType.COMMA_TOKEN
-                    || nextType == Token.TokenType.RIGHTPAREN_TOKEN) {
-                if (nextType == Token.TokenType.COMMA_TOKEN) {
-                    advanceToken();
-                }
-                return new Param(id, false);
+                return new Param(id, true);
             } else {
-                throw new ParserException("Parsing Param: Expected , or ), got " + nextType.toString());
+                throw new ParserException(Token.TokenType.RIGHTSQBRACKET_TOKEN, nextType, Param.class);
             }
+        } else if (nextType == Token.TokenType.COMMA_TOKEN
+                || nextType == Token.TokenType.RIGHTPAREN_TOKEN) {
+            if (nextType == Token.TokenType.COMMA_TOKEN) {
+                advanceToken();
+            }
+            return new Param(id, false);
         } else {
-            throw new ParserException("Parsing Param: Expected INT, got " + nextType.toString());
+            throw new ParserException("Parsing Param: Expected , or ), got " + nextType.toString());
         }
 
     }
@@ -203,49 +272,47 @@ public class CMinusParser implements Parser {
     private CompoundStatement parseCompoundStmt() throws ParserException {
         ArrayList<VarDeclaration> localDecls = new ArrayList<>();
         ArrayList<Statement> stmtList = new ArrayList<>();
-        if (nextType == Token.TokenType.LEFTCURLYBRACE_TOKEN) {
-            advanceToken();
-        } else {
-            throw new ParserException("Parsing CompoundStatement: Expected {, got " + nextType.toString());
-        }
+        matchToken(Token.TokenType.LEFTCURLYBRACE_TOKEN);
         if (nextType == Token.TokenType.INT_TOKEN
                 || nextType == Token.TokenType.VOID_TOKEN) {
             localDecls = parseLocalDecls();
         }
-        if (nextType == Token.TokenType.SEMICOLON_TOKEN
-                || nextType == Token.TokenType.LEFTPAREN_TOKEN
-                || nextType == Token.TokenType.NUM_TOKEN
-                || nextType == Token.TokenType.ID_TOKEN
-                || nextType == Token.TokenType.LEFTCURLYBRACE_TOKEN
-                || nextType == Token.TokenType.IF_TOKEN
-                || nextType == Token.TokenType.WHILE_TOKEN
-                || nextType == Token.TokenType.RETURN_TOKEN) {
+        if ( tokenTypeInArray(nextType, 
+        		new Token.TokenType[]{
+		        	Token.TokenType.SEMICOLON_TOKEN,
+		            Token.TokenType.LEFTPAREN_TOKEN,
+		            Token.TokenType.NUM_TOKEN,
+		            Token.TokenType.ID_TOKEN,
+		            Token.TokenType.LEFTCURLYBRACE_TOKEN,
+		            Token.TokenType.IF_TOKEN,
+		            Token.TokenType.WHILE_TOKEN,
+		            Token.TokenType.RETURN_TOKEN
+		        } 
+        ) ) {
             stmtList = parseStmtList();
-            if (nextType == Token.TokenType.RIGHTCURLYBRACE_TOKEN) {
-                advanceToken();
-                return new CompoundStatement(localDecls, stmtList);
-            } else {
-                throw new ParserException("Parsing CompoundStatement: Expected }, got " + nextType.toString());
-            }
-        } else if (nextType == Token.TokenType.RIGHTCURLYBRACE_TOKEN) {
-            advanceToken();
+            matchToken(Token.TokenType.RIGHTCURLYBRACE_TOKEN);
             return new CompoundStatement(localDecls, stmtList);
-        } else {
-            throw new ParserException("Parsing CompoundStatement: Expected {, got " + nextType.toString());
+        } else{
+            matchToken(Token.TokenType.RIGHTCURLYBRACE_TOKEN);
+            return new CompoundStatement(localDecls, stmtList);
         }
     }
 
     private ArrayList<VarDeclaration> parseLocalDecls() throws ParserException {
-        ArrayList<VarDeclaration> returnList = new ArrayList();
-        while (nextType != Token.TokenType.IF_TOKEN
-                && nextType != Token.TokenType.ID_TOKEN
-                && nextType != Token.TokenType.NUM_TOKEN
-                && nextType != Token.TokenType.WHILE_TOKEN
-                && nextType != Token.TokenType.RETURN_TOKEN
-                && nextType != Token.TokenType.LEFTPAREN_TOKEN
-                && nextType != Token.TokenType.LEFTCURLYBRACE_TOKEN
-                && nextType != Token.TokenType.SEMICOLON_TOKEN
-                && nextType != Token.TokenType.RIGHTCURLYBRACE_TOKEN) {
+        ArrayList<VarDeclaration> returnList = new ArrayList<VarDeclaration>();
+        while ( !tokenTypeInArray(nextType, 
+        		new Token.TokenType[]{
+		        	Token.TokenType.SEMICOLON_TOKEN,
+		            Token.TokenType.LEFTPAREN_TOKEN,
+		            Token.TokenType.NUM_TOKEN,
+		            Token.TokenType.ID_TOKEN,
+		            Token.TokenType.LEFTCURLYBRACE_TOKEN,
+		            Token.TokenType.IF_TOKEN,
+		            Token.TokenType.WHILE_TOKEN,
+		            Token.TokenType.RETURN_TOKEN,
+		            Token.TokenType.RIGHTCURLYBRACE_TOKEN
+		        } 
+		)) {
             returnList.add(parseVarDecl());
         }
         return returnList;
@@ -255,44 +322,37 @@ public class CMinusParser implements Parser {
         String returnID;
         int returnNum;
         VarDeclaration returnVarDecl = null;
-        if (nextType == Token.TokenType.INT_TOKEN) {
-            advanceToken();
-            if (nextType == Token.TokenType.ID_TOKEN) {
-                returnID = nextToken.getTokenData().toString();
+        matchToken(Token.TokenType.INT_TOKEN);
+        matchTokenNoAdvance(Token.TokenType.ID_TOKEN);
+        returnID = nextToken.getTokenData().toString();
+        advanceToken();
+        switch (nextType) {
+            case SEMICOLON_TOKEN:
+                returnVarDecl = new VarDeclaration(returnID);
                 advanceToken();
-                switch (nextType) {
-                    case SEMICOLON_TOKEN:
-                        returnVarDecl = new VarDeclaration(returnID);
-                        advanceToken();
-                        break;
-                    case LEFTSQBRACKET_TOKEN:
-                        advanceToken();
-                        if (nextType == Token.TokenType.NUM_TOKEN) {
-                            returnNum = (int) nextToken.getTokenData();
-                            advanceToken();
-                            if (nextType != Token.TokenType.RIGHTSQBRACKET_TOKEN) {
-                                throw new ParserException("Parsing VarDecl: Expected ], got " + nextType.toString());
-                            }
-                            advanceToken();
-                            returnVarDecl = new VarDeclaration(returnID, returnNum);
-                            break;
-                        } else {
-                            throw new ParserException("Parsing VarDecl: Expected NUM, got " + nextType.toString());
-                        }
-                    default:
-                        throw new ParserException("Parsing VarDecl: Expected [ or ;, got " + nextType.toString());
+                break;
+            case LEFTSQBRACKET_TOKEN:
+                advanceToken();
+                if (nextType == Token.TokenType.NUM_TOKEN) {
+                    returnNum = (int) nextToken.getTokenData();
+                    advanceToken();
+                    if (nextType != Token.TokenType.RIGHTSQBRACKET_TOKEN) {
+                        throw new ParserException("Parsing VarDecl: Expected ], got " + nextType.toString());
+                    }
+                    advanceToken();
+                    returnVarDecl = new VarDeclaration(returnID, returnNum);
+                    break;
+                } else {
+                    throw new ParserException("Parsing VarDecl: Expected NUM, got " + nextType.toString());
                 }
-            } else {
-                throw new ParserException("Parsing VarDecl: Expected ID, got " + nextType.toString());
-            }
-        } else {
-            throw new ParserException("Parsing VarDecl: Expected INT, got " + nextType.toString());
+            default:
+                throw new ParserException("Parsing VarDecl: Expected [ or ;, got " + nextType.toString());
         }
         return returnVarDecl;
     }
 
     private ArrayList<Statement> parseStmtList() throws ParserException {
-        ArrayList<Statement> returnList = new ArrayList();
+        ArrayList<Statement> returnList = new ArrayList<Statement>();
         while (nextType != Token.TokenType.RIGHTCURLYBRACE_TOKEN) {
             returnList.add(parseStatement());
             //advanceToken();

@@ -468,6 +468,14 @@ public class CMinusScanner_jflex implements Scanner {
 		}
 		return returnData;
 	}
+	
+	public int getCurrentLine(){
+		return yyline + 1;
+	}
+	
+	public int getCurrentColumn(){
+		return yycolumn;
+	}
 
 
 

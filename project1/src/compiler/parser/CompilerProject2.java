@@ -27,7 +27,11 @@ public class CompilerProject2 {
             myProgram = myParser.parse();
             myProgram.print();
         } catch (ParserException pe) {
+        	System.err.println("Parser hit exception and stopped reading the "
+        			+ "input file on line " + myScan.getCurrentLine() + 
+        			", somewhere around column " + myScan.getCurrentColumn() + ".");
             System.err.println(pe.getMessage());
+            pe.printStackTrace();
         }
     }
 }

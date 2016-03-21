@@ -1,6 +1,10 @@
 package compiler.parser;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.*;
+
 import compiler.scanner.*;
 
 public class CMinusParser implements Parser {
@@ -12,6 +16,23 @@ public class CMinusParser implements Parser {
 
     public CMinusParser(CMinusScanner_jflex scanner) {
         scan = scanner;
+        try {
+			scan.setNextToken(scan.scanToken());
+			nextToken = new Token(scan.getTokenType(), scan.getTokenData());
+			nextType = nextToken.getTokenType();
+			
+		} catch (ScannerException e) {
+			e.printStackTrace();
+		} catch (FileNotFoundException e1) {
+			System.out.println("Error: file not found");
+			e1.printStackTrace();
+		} catch (UnsupportedEncodingException e1) {
+			System.out.println("Error: Unsupported file encoding");
+			e1.printStackTrace();
+		} catch (IOException e) {
+			System.out.println("Scanner Exception: An IOException " + "occurred while reading the input file.");
+			e.printStackTrace();
+		}
     }
 
     private Token advanceToken() {
@@ -19,10 +40,24 @@ public class CMinusParser implements Parser {
         nextType = nextToken.getTokenType();
         return nextToken;
     }
+    
+    private Token getCurrentToken(){
+    	return nextToken;
+    }
+    
+    private Token viewNextToken(){
+    	return scan.viewNextToken();
+    }
+    
+    private void matchToken(Token.TokenType matchType) throws ParserException {
+    	if(advanceToken().getTokenType() != matchType){
+    		throw new ParserException(matchType, nextToken.getTokenType());
+    	}
+    }
 
     @Override
     public Program parse() throws ParserException {
-        ArrayList<Declarations> declList = new ArrayList();
+        ArrayList<Declarations> declList = new ArrayList<Declarations>();
         advanceToken();
         declList.add(parseDecl());
         while (nextType == Token.TokenType.INT_TOKEN | nextType == Token.TokenType.VOID_TOKEN) {
@@ -129,7 +164,7 @@ public class CMinusParser implements Parser {
             advanceToken();
             ArrayList<Param> params = parseParams();
             if (nextType == Token.TokenType.RIGHTPAREN_TOKEN) {
-                advanceToken();
+                this.matchToken(Token.TokenType.LEFTCURLYBRACE_TOKEN);
                 CompoundStatement cs = parseCompoundStmt();
                 return new FunDeclaration(typeSpec, id, params, cs);
             } else {
@@ -291,7 +326,6 @@ public class CMinusParser implements Parser {
         Statement returnStatement = null;
         switch (nextType) {
             case IF_TOKEN:
-                advanceToken();
                 returnStatement = parseIf();
                 break;
             case WHILE_TOKEN:
@@ -319,10 +353,8 @@ public class CMinusParser implements Parser {
     }
 
     private IfStatement parseIf() throws ParserException {
-        if (nextType != Token.TokenType.LEFTPAREN_TOKEN) {
-            throw new ParserException("Parsing IfStmt: Expected (, got " + nextType.toString());
-        }
-        advanceToken();
+        this.matchToken(Token.TokenType.LEFTPAREN_TOKEN);
+        this.advanceToken();
         Expression e = parseExpression();
         if (nextType != Token.TokenType.RIGHTPAREN_TOKEN) {
             throw new ParserException("Parsing IfStmt: Expected ), got " + nextType.toString());
@@ -437,14 +469,23 @@ public class CMinusParser implements Parser {
                 }
                 return parseExprDP(new VarExpressions(((VarExpressions) e).getVar(), inBrackets));
             case MULTIPLY_TOKEN:
+            	return this.parseFactor();
             case DIVIDE_TOKEN:
+            	return this.parseFactor();
             case PLUS_TOKEN:
+            	return this.parseTerm();
             case MINUS_TOKEN:
+            	return this.parseTerm();
             case LESSTHANEQUALTO_TOKEN:
+            	return this.parseAddExpr();
             case LESSTHAN_TOKEN:
+            	return this.parseAddExpr();
             case GREATERTHAN_TOKEN:
+            	return this.parseAddExpr();
             case GREATERTHANEQUALTO_TOKEN:
+            	return this.parseAddExpr();
             case EQUALTO_TOKEN:
+            	return this.parseAddExpr();
             case NOTEQUAL_TOKEN:
                 return parseSimExpr(e);
             default:
@@ -458,14 +499,22 @@ public class CMinusParser implements Parser {
                 advanceToken();
                 return new AssignExpression(e, parseExpression());
             case MULTIPLY_TOKEN:
+            	return this.parseFactor();
             case DIVIDE_TOKEN:
+            	return this.parseFactor();
             case PLUS_TOKEN:
+            	return this.parseTerm();
             case MINUS_TOKEN:
+            	return this.parseTerm();
             case LESSTHANEQUALTO_TOKEN:
+            	return this.parseAddExpr();
             case LESSTHAN_TOKEN:
+            	return this.parseAddExpr();
             case GREATERTHAN_TOKEN:
             case GREATERTHANEQUALTO_TOKEN:
+            	return this.parseAddExpr();
             case EQUALTO_TOKEN:
+            	return this.parseAddExpr();
             case NOTEQUAL_TOKEN:
                 return parseSimExpr(e);
             default:

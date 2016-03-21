@@ -102,442 +102,445 @@ public class CMinusParser implements Parser {
             if (nextType == Token.TokenType.RIGHTSQBRACKET_TOKEN) {
                 advanceToken();
             } else {
-                throw new ParserException("Parsing Decl': Expected ], got " + nextType.toString());
+                throw new ParserException(Token.TokenType.RIGHTSQBRACKET_TOKEN, nextType, Declarations.class);
             }
-            if (nextType == Token.TokenType.SEMICOLON) {
+            if (nextType == Token.TokenType.SEMICOLON_TOKEN) {
                 advanceToken();
             } else {
-                throw new ParseException("Parsing Decl': Expected ;, got " + nextType.toString());
+                throw new ParserException(Token.TokenType.SEMICOLON_TOKEN, nextType, Declarations.class);
             }
-            return new VarDecl(id, num);
-        } else if (nextType == Token.TokenType.SEMICOLON) {
+            return new VarDeclaration(id, num);
+        } else if (nextType == Token.TokenType.SEMICOLON_TOKEN) {
             advanceToken();
-            return new VarDecl(id);
-        } else if (nextType == Token.TokenType.LEFTPAREN) {
-            return parseFunDeclPrime(Token.TokenType.INT, id);
+            return new VarDeclaration(id);
+        } else if (nextType == Token.TokenType.LEFTPAREN_TOKEN) {
+            return parseFunDeclPrime(Token.TokenType.NUM_TOKEN, id);
         } else {
-            throw new ParseException("Parsing Decl': Expected [, ;, or (; got " + nextType.toString());
+            throw new ParserException(new Token.TokenType[]{
+            		Token.TokenType.LEFTSQBRACKET_TOKEN, 
+            		Token.TokenType.SEMICOLON_TOKEN,
+            		Token.TokenType.LEFTPAREN_TOKEN}, nextType, Declarations.class);
         }
 
     }
 
-    private FunDecl parseFunDeclPrime(Token.TokenType typeSpec, String id) throws ParseException {
-        if (nextType == Token.TokenType.LEFTPAREN) {
+    private FunDeclaration parseFunDeclPrime(Token.TokenType typeSpec, String id) throws ParserException {
+        if (nextType == Token.TokenType.LEFTPAREN_TOKEN) {
             advanceToken();
             ArrayList<Param> params = parseParams();
-            if (nextType == Token.TokenType.RIGHTPAREN) {
+            if (nextType == Token.TokenType.RIGHTPAREN_TOKEN) {
                 advanceToken();
                 CompoundStatement cs = parseCompoundStmt();
-                return new FunDecl(typeSpec, id, params, cs);
+                return new FunDeclaration(typeSpec, id, params, cs);
             } else {
-                throw new ParseException("Parsing FunDecl': Expected ), got " + nextType.toString());
+                throw new ParserException(Token.TokenType.LEFTPAREN_TOKEN, nextType, FunDeclaration.class);
             }
         } else {
-            throw new ParseException("Parsing FunDecl': Expected (, got " + nextType.toString());
+        	throw new ParserException(Token.TokenType.LEFTPAREN_TOKEN, nextType, FunDeclaration.class);
         }
     }
 
-    private ArrayList<Param> parseParams() throws ParseException {
+    private ArrayList<Param> parseParams() throws ParserException {
         ArrayList<Param> alp = new ArrayList();
         //advanceToken();
-        if (nextType == Token.TokenType.VOID) {
+        if (nextType == Token.TokenType.VOID_TOKEN) {
             advanceToken();
             return alp;
         }
         alp.add(parseParam());
-        while (nextType != Token.TokenType.RIGHTPAREN) {
+        while (nextType != Token.TokenType.RIGHTPAREN_TOKEN) {
             alp.add(parseParam());
         }
         return alp;
     }
 
-    private Param parseParam() throws ParseException {
+    private Param parseParam() throws ParserException {
         Param p;
-        if (nextType == Token.TokenType.INT) {
+        if (nextType == Token.TokenType.INT_TOKEN) {
             advanceToken();
-            if (nextType == Token.TokenType.IDENT) {
+            if (nextType == Token.TokenType.ID_TOKEN) {
                 String id = nextToken.getTokenData().toString();
                 advanceToken();
-                if (nextType == Token.TokenType.LEFTSQBRACKET) {
+                if (nextType == Token.TokenType.LEFTSQBRACKET_TOKEN) {
                     advanceToken();
-                    if (nextType == Token.TokenType.RIGHTSQBRACKET) {
+                    if (nextType == Token.TokenType.RIGHTSQBRACKET_TOKEN) {
                         advanceToken();
                         return new Param(id, true);
                     } else {
-                        throw new ParseException("Parsing Param: Expected ], got " + nextType.toString());
+                        throw new ParserException(Token.TokenType.RIGHTSQBRACKET_TOKEN, nextType, Param.class);
                     }
-                } else if (nextType == Token.TokenType.COMMA
-                        || nextType == Token.TokenType.RIGHTPAREN) {
-                    if (nextType == Token.TokenType.COMMA) {
+                } else if (nextType == Token.TokenType.COMMA_TOKEN
+                        || nextType == Token.TokenType.RIGHTPAREN_TOKEN) {
+                    if (nextType == Token.TokenType.COMMA_TOKEN) {
                         advanceToken();
                     }
                     return new Param(id, false);
                 } else {
-                    throw new ParseException("Parsing Param: Expected , or ), got " + nextType.toString());
+                    throw new ParserException("Parsing Param: Expected , or ), got " + nextType.toString());
                 }
             } else {
-                throw new ParseException("Parsing Param: Expected IDENT, got " + nextType.toString());
+                throw new ParserException("Parsing Param: Expected IDENT, got " + nextType.toString());
             }
         } else {
-            throw new ParseException("Parsing Param: Expected INT, got " + nextType.toString());
+            throw new ParserException("Parsing Param: Expected INT, got " + nextType.toString());
         }
 
     }
 
-    private CompoundStatement parseCompoundStmt() throws ParseException {
-        ArrayList<VarDecl> localDecls = new ArrayList<>();
+    private CompoundStatement parseCompoundStmt() throws ParserException {
+        ArrayList<VarDeclaration> localDecls = new ArrayList<>();
         ArrayList<Statement> stmtList = new ArrayList<>();
-        if (nextType == Token.TokenType.LEFTBRACE) {
+        if (nextType == Token.TokenType.LEFTCURLYBRACE_TOKEN) {
             advanceToken();
         } else {
-            throw new ParseException("Parsing CompoundStatement: Expected {, got " + nextType.toString());
+            throw new ParserException("Parsing CompoundStatement: Expected {, got " + nextType.toString());
         }
-        if (nextType == Token.TokenType.INT
-                || nextType == Token.TokenType.VOID) {
+        if (nextType == Token.TokenType.INT_TOKEN
+                || nextType == Token.TokenType.VOID_TOKEN) {
             localDecls = parseLocalDecls();
         }
-        if (nextType == Token.TokenType.SEMICOLON
-                || nextType == Token.TokenType.LEFTPAREN
-                || nextType == Token.TokenType.NUM
-                || nextType == Token.TokenType.IDENT
-                || nextType == Token.TokenType.LEFTBRACE
-                || nextType == Token.TokenType.IF
-                || nextType == Token.TokenType.WHILE
-                || nextType == Token.TokenType.RETURN) {
+        if (nextType == Token.TokenType.SEMICOLON_TOKEN
+                || nextType == Token.TokenType.LEFTPAREN_TOKEN
+                || nextType == Token.TokenType.NUM_TOKEN
+                || nextType == Token.TokenType.ID_TOKEN
+                || nextType == Token.TokenType.LEFTCURLYBRACE_TOKEN
+                || nextType == Token.TokenType.IF_TOKEN
+                || nextType == Token.TokenType.WHILE_TOKEN
+                || nextType == Token.TokenType.RETURN_TOKEN) {
             stmtList = parseStmtList();
-            if (nextType == Token.TokenType.RIGHTBRACE) {
+            if (nextType == Token.TokenType.RIGHTCURLYBRACE_TOKEN) {
                 advanceToken();
                 return new CompoundStatement(localDecls, stmtList);
             } else {
-                throw new ParseException("Parsing CompoundStatement: Expected }, got " + nextType.toString());
+                throw new ParserException("Parsing CompoundStatement: Expected }, got " + nextType.toString());
             }
-        } else if (nextType == Token.TokenType.RIGHTBRACE) {
+        } else if (nextType == Token.TokenType.RIGHTCURLYBRACE_TOKEN) {
             advanceToken();
             return new CompoundStatement(localDecls, stmtList);
         } else {
-            throw new ParseException("Parsing CompoundStatement: Expected {, got " + nextType.toString());
+            throw new ParserException("Parsing CompoundStatement: Expected {, got " + nextType.toString());
         }
     }
 
-    private ArrayList<VarDecl> parseLocalDecls() throws ParseException {
-        ArrayList<VarDecl> returnList = new ArrayList();
-        while (nextType != Token.TokenType.IF
-                && nextType != Token.TokenType.IDENT
-                && nextType != Token.TokenType.NUM
-                && nextType != Token.TokenType.WHILE
-                && nextType != Token.TokenType.RETURN
-                && nextType != Token.TokenType.LEFTPAREN
-                && nextType != Token.TokenType.LEFTBRACE
-                && nextType != Token.TokenType.SEMICOLON
-                && nextType != Token.TokenType.RIGHTBRACE) {
+    private ArrayList<VarDeclaration> parseLocalDecls() throws ParserException {
+        ArrayList<VarDeclaration> returnList = new ArrayList();
+        while (nextType != Token.TokenType.IF_TOKEN
+                && nextType != Token.TokenType.ID_TOKEN
+                && nextType != Token.TokenType.NUM_TOKEN
+                && nextType != Token.TokenType.WHILE_TOKEN
+                && nextType != Token.TokenType.RETURN_TOKEN
+                && nextType != Token.TokenType.LEFTPAREN_TOKEN
+                && nextType != Token.TokenType.LEFTCURLYBRACE_TOKEN
+                && nextType != Token.TokenType.SEMICOLON_TOKEN
+                && nextType != Token.TokenType.RIGHTCURLYBRACE_TOKEN) {
             returnList.add(parseVarDecl());
         }
         return returnList;
     }
 
-    private VarDecl parseVarDecl() throws ParseException {
+    private VarDeclaration parseVarDecl() throws ParserException {
         String returnID;
         int returnNum;
-        VarDecl returnVarDecl = null;
-        if (nextType == Token.TokenType.INT) {
+        VarDeclaration returnVarDecl = null;
+        if (nextType == Token.TokenType.INT_TOKEN) {
             advanceToken();
-            if (nextType == Token.TokenType.IDENT) {
+            if (nextType == Token.TokenType.ID_TOKEN) {
                 returnID = nextToken.getTokenData().toString();
                 advanceToken();
                 switch (nextType) {
-                    case SEMICOLON:
-                        returnVarDecl = new VarDecl(returnID);
+                    case SEMICOLON_TOKEN:
+                        returnVarDecl = new VarDeclaration(returnID);
                         advanceToken();
                         break;
-                    case LEFTSQBRACKET:
+                    case LEFTSQBRACKET_TOKEN:
                         advanceToken();
-                        if (nextType == Token.TokenType.NUM) {
+                        if (nextType == Token.TokenType.NUM_TOKEN) {
                             returnNum = (int) nextToken.getTokenData();
                             advanceToken();
-                            if (nextType != Token.TokenType.RIGHTSQBRACKET) {
-                                throw new ParseException("Parsing VarDecl: Expected ], got " + nextType.toString());
+                            if (nextType != Token.TokenType.RIGHTSQBRACKET_TOKEN) {
+                                throw new ParserException("Parsing VarDecl: Expected ], got " + nextType.toString());
                             }
                             advanceToken();
-                            returnVarDecl = new VarDecl(returnID, returnNum);
+                            returnVarDecl = new VarDeclaration(returnID, returnNum);
                             break;
                         } else {
-                            throw new ParseException("Parsing VarDecl: Expected NUM, got " + nextType.toString());
+                            throw new ParserException("Parsing VarDecl: Expected NUM, got " + nextType.toString());
                         }
                     default:
-                        throw new ParseException("Parsing VarDecl: Expected [ or ;, got " + nextType.toString());
+                        throw new ParserException("Parsing VarDecl: Expected [ or ;, got " + nextType.toString());
                 }
             } else {
-                throw new ParseException("Parsing VarDecl: Expected ID, got " + nextType.toString());
+                throw new ParserException("Parsing VarDecl: Expected ID, got " + nextType.toString());
             }
         } else {
-            throw new ParseException("Parsing VarDecl: Expected INT, got " + nextType.toString());
+            throw new ParserException("Parsing VarDecl: Expected INT, got " + nextType.toString());
         }
         return returnVarDecl;
     }
 
-    private ArrayList<Statement> parseStmtList() throws ParseException {
+    private ArrayList<Statement> parseStmtList() throws ParserException {
         ArrayList<Statement> returnList = new ArrayList();
-        while (nextType != Token.TokenType.RIGHTBRACE) {
+        while (nextType != Token.TokenType.RIGHTCURLYBRACE_TOKEN) {
             returnList.add(parseStatement());
             //advanceToken();
         }
         return returnList;
     }
 
-    private Statement parseStatement() throws ParseException {
+    private Statement parseStatement() throws ParserException {
         Statement returnStatement = null;
         switch (nextType) {
-            case IF:
+            case IF_TOKEN:
                 advanceToken();
                 returnStatement = parseIf();
                 break;
-            case WHILE:
+            case WHILE_TOKEN:
                 advanceToken();
                 returnStatement = parseWhile();
                 break;
-            case RETURN:
+            case RETURN_TOKEN:
                 advanceToken();
                 returnStatement = parseReturn();
                 break;
-            case NUM:
-            case IDENT:
-            case LEFTPAREN:
-            case SEMICOLON:
+            case NUM_TOKEN:
+            case ID_TOKEN:
+            case LEFTPAREN_TOKEN:
+            case SEMICOLON_TOKEN:
                 returnStatement = parseExprStmt();
                 break;
-            case LEFTBRACE:
+            case LEFTCURLYBRACE_TOKEN:
                 returnStatement = parseCompoundStmt();
                 break;
             default:
-                throw new ParseException("Parsing Statement: Expected IF, WHILE,"
+                throw new ParserException("Parsing Statement: Expected IF, WHILE,"
                         + " NUM, ID, RETURN, (, ;, or {, got " + nextType.toString());
         }
         return returnStatement;
     }
 
-    private IfStatement parseIf() throws ParseException {
-        if (nextType != Token.TokenType.LEFTPAREN) {
-            throw new ParseException("Parsing IfStmt: Expected (, got " + nextType.toString());
+    private IfStatement parseIf() throws ParserException {
+        if (nextType != Token.TokenType.LEFTPAREN_TOKEN) {
+            throw new ParserException("Parsing IfStmt: Expected (, got " + nextType.toString());
         }
         advanceToken();
         Expression e = parseExpression();
-        if (nextType != Token.TokenType.RIGHTPAREN) {
-            throw new ParseException("Parsing IfStmt: Expected ), got " + nextType.toString());
+        if (nextType != Token.TokenType.RIGHTPAREN_TOKEN) {
+            throw new ParserException("Parsing IfStmt: Expected ), got " + nextType.toString());
         }
         advanceToken();
         Statement s = parseStatement();
         Statement elseStatement = null;
-        if (nextType == Token.TokenType.ELSE) {
+        if (nextType == Token.TokenType.ELSE_TOKEN) {
             advanceToken();
             elseStatement = parseStatement();
         }
         return new IfStatement(e, s, elseStatement);
     }
 
-    private WhileStatement parseWhile() throws ParseException {
-        if (nextType != Token.TokenType.LEFTPAREN) {
-            throw new ParseException("Parsing WhileStmt: Expected (, got " + nextType.toString());
+    private WhileStatement parseWhile() throws ParserException {
+        if (nextType != Token.TokenType.LEFTPAREN_TOKEN) {
+            throw new ParserException("Parsing WhileStmt: Expected (, got " + nextType.toString());
         }
         advanceToken();
         Expression e = parseExpression();
-        if (nextType != Token.TokenType.RIGHTPAREN) {
-            throw new ParseException("Parsing WhileStmt: Expected ), got " + nextType.toString());
+        if (nextType != Token.TokenType.RIGHTPAREN_TOKEN) {
+            throw new ParserException("Parsing WhileStmt: Expected ), got " + nextType.toString());
         }
         advanceToken();
         Statement s = parseStatement();
         return new WhileStatement(e, s);
     }
 
-    private ReturnStatement parseReturn() throws ParseException {
+    private ReturnStatement parseReturn() throws ParserException {
         Expression e = null;
         switch (nextType) {
-            case LEFTPAREN:
-            case IDENT:
-            case NUM:
+            case LEFTPAREN_TOKEN:
+            case ID_TOKEN:
+            case NUM_TOKEN:
                 e = parseExpression();
                 advanceToken();
                 break;
-            case SEMICOLON:
+            case SEMICOLON_TOKEN:
                 advanceToken();
                 break;
             default:
-                throw new ParseException("Parsing ReturnStmt: Expected (, ID, NUM, or ;, got " + nextType.toString());
+                throw new ParserException("Parsing ReturnStmt: Expected (, ID, NUM, or ;, got " + nextType.toString());
         }
         return new ReturnStatement(e);
     }
 
-    private ExpressionStatement parseExprStmt() throws ParseException {
+    private ExpressionStatement parseExprStmt() throws ParserException {
         Expression e = null;
         switch (nextType) {
-            case LEFTPAREN:
-            case IDENT:
-            case NUM:
+            case LEFTPAREN_TOKEN:
+            case ID_TOKEN:
+            case NUM_TOKEN:
                 e = parseExpression();
-                if (nextType != Token.TokenType.SEMICOLON) {
-                    throw new ParseException("Parsing ExprStmt: Expected ;, got " + nextType.toString());
+                if (nextType != Token.TokenType.SEMICOLON_TOKEN) {
+                    throw new ParserException("Parsing ExprStmt: Expected ;, got " + nextType.toString());
                 }
                 advanceToken();
                 break;
-            case SEMICOLON:
+            case SEMICOLON_TOKEN:
                 advanceToken();
                 break;
             default:
-                throw new ParseException("Parsing ExprStmt: Expected (, ID, NUM, or ;, got " + nextType.toString());
+                throw new ParserException("Parsing ExprStmt: Expected (, ID, NUM, or ;, got " + nextType.toString());
         }
         return new ExpressionStatement(e);
     }
 
-    private Expression parseExpression() throws ParseException {
+    private Expression parseExpression() throws ParserException {
         Expression e;
         Object data;
         switch (nextType) {
-            case LEFTPAREN:
+            case LEFTPAREN_TOKEN:
                 advanceToken();
                 e = parseExpression();
                 advanceToken();
-                if (nextType != Token.TokenType.RIGHTPAREN) {
-                    throw new ParseException("Parsing Expr: Expected ), got " + nextType.toString());
+                if (nextType != Token.TokenType.RIGHTPAREN_TOKEN) {
+                    throw new ParserException("Parsing Expr: Expected ), got " + nextType.toString());
                 }
                 return parseSimExpr(e);
-            case NUM:
+            case NUM_TOKEN:
                 data = nextToken.getTokenData();
                 advanceToken();
-                return parseSimExpr(new NumExpr((int) data));
-            case IDENT:
+                return parseSimExpr(new NumExpression((int) data));
+            case ID_TOKEN:
                 data = nextToken.getTokenData();
                 advanceToken();
-                return parseExprPrime(new VarExpr((String) data));
+                return parseExprPrime(new VarExpressions((String) data));
             default:
-                throw new ParseException("Parsing Expr: Expected (, NUM, or ID, got " + nextType.toString());
+                throw new ParserException("Parsing Expr: Expected (, NUM, or ID, got " + nextType.toString());
         }
     }
 
-    private Expression parseExprPrime(Expression e) throws ParseException {
+    private Expression parseExprPrime(Expression e) throws ParserException {
         switch (nextType) {
-            case ASSIGN:
+            case ASSIGN_TOKEN:
                 advanceToken();
-                return new AssignExpr((VarExpr) e, parseExpression());
-            case LEFTPAREN:
+                return new AssignExpression((VarExpressions) e, parseExpression());
+            case LEFTPAREN_TOKEN:
                 advanceToken();
-                CallExpr ce = new CallExpr(((VarExpr) e).getVar(), parseArgs());
-                if (nextType != Token.TokenType.RIGHTPAREN) {
-                    throw new ParseException("Parsing Expr': Expected ), got " + nextType.toString());
+                CallExpression ce = new CallExpression(((VarExpressions) e).getVar(), parseArgs());
+                if (nextType != Token.TokenType.RIGHTPAREN_TOKEN) {
+                    throw new ParserException("Parsing Expr': Expected ), got " + nextType.toString());
                 }
                 advanceToken();
                 return parseSimExpr(ce);
-            case LEFTSQBRACKET:
+            case LEFTSQBRACKET_TOKEN:
                 advanceToken();
                 Expression inBrackets = parseExpression();
                 advanceToken();
-                if (nextType != Token.TokenType.RIGHTSQBRACKET) {
-                    throw new ParseException("Parsing Expr': Expected ], got " + nextType.toString());
+                if (nextType != Token.TokenType.RIGHTSQBRACKET_TOKEN) {
+                    throw new ParserException("Parsing Expr': Expected ], got " + nextType.toString());
                 }
-                return parseExprDP(new VarExpr(((VarExpr) e).getVar(), inBrackets));
-            case STAR:
-            case SLASH:
-            case PLUS:
-            case MINUS:
-            case LESSTHANEQUALTO:
-            case LESSTHAN:
-            case GREATERTHAN:
-            case GREATERTHANEQUALTO:
-            case COMPARE:
-            case NOTEQUAL:
+                return parseExprDP(new VarExpressions(((VarExpressions) e).getVar(), inBrackets));
+            case MULTIPLY_TOKEN:
+            case DIVIDE_TOKEN:
+            case PLUS_TOKEN:
+            case MINUS_TOKEN:
+            case LESSTHANEQUALTO_TOKEN:
+            case LESSTHAN_TOKEN:
+            case GREATERTHAN_TOKEN:
+            case GREATERTHANEQUALTO_TOKEN:
+            case EQUALTO_TOKEN:
+            case NOTEQUAL_TOKEN:
                 return parseSimExpr(e);
             default:
                 return e;
         }
     }
 
-    private Expression parseExprDP(VarExpr e) throws ParseException {
+    private Expression parseExprDP(VarExpressions e) throws ParserException {
         switch (nextType) {
-            case ASSIGN:
+            case ASSIGN_TOKEN:
                 advanceToken();
-                return new AssignExpr(e, parseExpression());
-            case STAR:
-            case SLASH:
-            case PLUS:
-            case MINUS:
-            case LESSTHANEQUALTO:
-            case LESSTHAN:
-            case GREATERTHAN:
-            case GREATERTHANEQUALTO:
-            case COMPARE:
-            case NOTEQUAL:
+                return new AssignExpression(e, parseExpression());
+            case MULTIPLY_TOKEN:
+            case DIVIDE_TOKEN:
+            case PLUS_TOKEN:
+            case MINUS_TOKEN:
+            case LESSTHANEQUALTO_TOKEN:
+            case LESSTHAN_TOKEN:
+            case GREATERTHAN_TOKEN:
+            case GREATERTHANEQUALTO_TOKEN:
+            case EQUALTO_TOKEN:
+            case NOTEQUAL_TOKEN:
                 return parseSimExpr(e);
             default:
                 return e;
         }
     }
 
-    private Expression parseSimExpr(Expression e) throws ParseException {
+    private Expression parseSimExpr(Expression e) throws ParserException {
         Expression addExprPrime = parseAddExprPrime(e);
-        BinExp.operation o;
+        BinaryExpression.operation o;
         switch (nextType) {
-            case LESSTHAN:
-                o = BinExp.operation.LT;
+            case LESSTHAN_TOKEN:
+                o = BinaryExpression.operation.LESSTHAN;
                 break;
-            case GREATERTHAN:
-                o = BinExp.operation.GT;
+            case GREATERTHAN_TOKEN:
+                o = BinaryExpression.operation.GREATERTHAN;
                 break;
-            case COMPARE:
-                o = BinExp.operation.COMPARE;
+            case EQUALTO_TOKEN:
+                o = BinaryExpression.operation.EQUALTO;
                 break;
-            case NOTEQUAL:
-                o = BinExp.operation.NOTEQ;
+            case NOTEQUAL_TOKEN:
+                o = BinaryExpression.operation.NOTEQUAL;
                 break;
-            case LESSTHANEQUALTO:
-                o = BinExp.operation.LTE;
+            case LESSTHANEQUALTO_TOKEN:
+                o = BinaryExpression.operation.LESSTHANEQUALTO;
                 break;
-            case GREATERTHANEQUALTO:
-                o = BinExp.operation.GTE;
+            case GREATERTHANEQUALTO_TOKEN:
+                o = BinaryExpression.operation.GREATERTHANEQUALTO;
                 break;
             default:
                 return addExprPrime;
         }
         advanceToken();
-        return new BinExp(addExprPrime, parseAddExpr(), o);
+        return new BinaryExpression(addExprPrime, parseAddExpr(), o);
     }
 
-    private Expression parseAddExprPrime(Expression e) throws ParseException {
-        BinExp.operation o = null;
+    private Expression parseAddExprPrime(Expression e) throws ParserException {
+        BinaryExpression.operation o = null;
         Expression tp;
-        if (nextType == Token.TokenType.STAR
-                || nextType == Token.TokenType.SLASH) {
+        if (nextType == Token.TokenType.MULTIPLY_TOKEN
+                || nextType == Token.TokenType.DIVIDE_TOKEN) {
             //advanceToken();
             tp = parseTermPrime(e);
             Expression be = tp;
             //advanceToken();
-            while (nextType == Token.TokenType.PLUS
-                    || nextType == Token.TokenType.MINUS) {
-                if (nextType == Token.TokenType.PLUS) {
-                    o = BinExp.operation.PLUS;
-                } else if (nextType == Token.TokenType.MINUS) {
-                    o = BinExp.operation.MINUS;
+            while (nextType == Token.TokenType.PLUS_TOKEN
+                    || nextType == Token.TokenType.MINUS_TOKEN) {
+                if (nextType == Token.TokenType.PLUS_TOKEN) {
+                    o = BinaryExpression.operation.PLUS;
+                } else if (nextType == Token.TokenType.MINUS_TOKEN) {
+                    o = BinaryExpression.operation.MINUS;
                 }
                 advanceToken();
-                be = new BinExp(be, parseTerm(), o);
+                be = new BinaryExpression(be, parseTerm(), o);
                 //advanceToken();
             }
             return be;
-        } else if (nextType == Token.TokenType.PLUS
-                || nextType == Token.TokenType.MINUS) {
-            if (nextType == Token.TokenType.PLUS) {
-                o = BinExp.operation.PLUS;
-            } else if (nextType == Token.TokenType.MINUS) {
-                o = BinExp.operation.MINUS;
+        } else if (nextType == Token.TokenType.PLUS_TOKEN
+                || nextType == Token.TokenType.MINUS_TOKEN) {
+            if (nextType == Token.TokenType.PLUS_TOKEN) {
+                o = BinaryExpression.operation.PLUS;
+            } else if (nextType == Token.TokenType.MINUS_TOKEN) {
+                o = BinaryExpression.operation.MINUS;
             }
             advanceToken();
-            BinExp be = new BinExp(e, parseTerm(), o);
+            BinaryExpression be = new BinaryExpression(e, parseTerm(), o);
             //advanceToken();
-            while (nextType == Token.TokenType.PLUS
-                    || nextType == Token.TokenType.MINUS) {
-                if (nextType == Token.TokenType.PLUS) {
-                    o = BinExp.operation.PLUS;
-                } else if (nextType == Token.TokenType.MINUS) {
-                    o = BinExp.operation.MINUS;
+            while (nextType == Token.TokenType.PLUS_TOKEN
+                    || nextType == Token.TokenType.MINUS_TOKEN) {
+                if (nextType == Token.TokenType.PLUS_TOKEN) {
+                    o = BinaryExpression.operation.PLUS;
+                } else if (nextType == Token.TokenType.MINUS_TOKEN) {
+                    o = BinaryExpression.operation.MINUS;
                 }
-                be = new BinExp(be, parseTerm(), o);
+                be = new BinaryExpression(be, parseTerm(), o);
                 advanceToken();
             }
             return be;
@@ -546,21 +549,21 @@ public class CMinusParser implements Parser {
         }
     }
 
-    private Expression parseAddExpr() throws ParseException {
+    private Expression parseAddExpr() throws ParserException {
         Expression term = parseTerm();
         //advanceToken();
-        BinExp.operation o = null;
+        BinaryExpression.operation o = null;
         Expression be = term;
-        if (nextType == Token.TokenType.PLUS
-                || nextType == Token.TokenType.MINUS) {
-            while (nextType == Token.TokenType.PLUS
-                    || nextType == Token.TokenType.MINUS) {
-                if (nextType == Token.TokenType.PLUS) {
-                    o = BinExp.operation.PLUS;
-                } else if (nextType == Token.TokenType.MINUS) {
-                    o = BinExp.operation.MINUS;
+        if (nextType == Token.TokenType.PLUS_TOKEN
+                || nextType == Token.TokenType.MINUS_TOKEN) {
+            while (nextType == Token.TokenType.PLUS_TOKEN
+                    || nextType == Token.TokenType.MINUS_TOKEN) {
+                if (nextType == Token.TokenType.PLUS_TOKEN) {
+                    o = BinaryExpression.operation.PLUS;
+                } else if (nextType == Token.TokenType.MINUS_TOKEN) {
+                    o = BinaryExpression.operation.MINUS;
                 }
-                be = new BinExp(be, parseTerm(), o);
+                be = new BinaryExpression(be, parseTerm(), o);
                 advanceToken();
             }
             return be;
@@ -568,30 +571,30 @@ public class CMinusParser implements Parser {
         return term;
     }
 
-    private Expression parseTerm() throws ParseException {
+    private Expression parseTerm() throws ParserException {
         //term -> factor { mulop factor }
         Expression lhs = parseFactor();
 
-        BinExp.operation o = null;
-        BinExp be;
-        if (nextType == Token.TokenType.STAR
-                || nextType == Token.TokenType.SLASH) {
-            if (nextType == Token.TokenType.STAR) {
-                o = BinExp.operation.MULT;
-            } else if (nextType == Token.TokenType.SLASH) {
-                o = BinExp.operation.DIV;
+        BinaryExpression.operation o = null;
+        BinaryExpression be;
+        if (nextType == Token.TokenType.MULTIPLY_TOKEN
+                || nextType == Token.TokenType.DIVIDE_TOKEN) {
+            if (nextType == Token.TokenType.MULTIPLY_TOKEN) {
+                o = BinaryExpression.operation.MULTIPLY;
+            } else if (nextType == Token.TokenType.DIVIDE_TOKEN) {
+                o = BinaryExpression.operation.DIVIDE;
             }
             advanceToken();
-            be = new BinExp(lhs, parseFactor(), o);
-            while (nextType == Token.TokenType.STAR
-                    || nextType == Token.TokenType.SLASH) {
-                if (nextType == Token.TokenType.STAR) {
-                    o = BinExp.operation.MULT;
-                } else if (nextType == Token.TokenType.SLASH) {
-                    o = BinExp.operation.DIV;
+            be = new BinaryExpression(lhs, parseFactor(), o);
+            while (nextType == Token.TokenType.MULTIPLY_TOKEN
+                    || nextType == Token.TokenType.DIVIDE_TOKEN) {
+                if (nextType == Token.TokenType.MULTIPLY_TOKEN) {
+                    o = BinaryExpression.operation.MULTIPLY;
+                } else if (nextType == Token.TokenType.DIVIDE_TOKEN) {
+                    o = BinaryExpression.operation.DIVIDE;
                 }
                 advanceToken();
-                be = new BinExp(lhs, parseFactor(), o);
+                be = new BinaryExpression(lhs, parseFactor(), o);
                 advanceToken();
             }
             return be;
@@ -600,22 +603,22 @@ public class CMinusParser implements Parser {
         }
     }
 
-    private Expression parseTermPrime(Expression e) throws ParseException {
+    private Expression parseTermPrime(Expression e) throws ParserException {
 
         //term -> factor { mulop factor }
-        BinExp.operation o = null;
-        BinExp be = null;
-        if (nextType == Token.TokenType.STAR
-                || nextType == Token.TokenType.SLASH) {
-            while (nextType == Token.TokenType.STAR
-                    || nextType == Token.TokenType.SLASH) {
-                if (nextType == Token.TokenType.STAR) {
-                    o = BinExp.operation.MULT;
-                } else if (nextType == Token.TokenType.SLASH) {
-                    o = BinExp.operation.DIV;
+    	BinaryExpression.operation o = null;
+    	BinaryExpression be = null;
+        if (nextType == Token.TokenType.MULTIPLY_TOKEN
+                || nextType == Token.TokenType.DIVIDE_TOKEN) {
+            while (nextType == Token.TokenType.MULTIPLY_TOKEN
+                    || nextType == Token.TokenType.DIVIDE_TOKEN) {
+                if (nextType == Token.TokenType.MULTIPLY_TOKEN) {
+                    o = BinaryExpression.operation.MULTIPLY;
+                } else if (nextType == Token.TokenType.DIVIDE_TOKEN) {
+                    o = BinaryExpression.operation.DIVIDE;
                 }
                 advanceToken();
-                be = new BinExp(e, parseFactor(), o);
+                be = new BinaryExpression(e, parseFactor(), o);
                 //advanceToken();
             }
             return be;
@@ -624,34 +627,34 @@ public class CMinusParser implements Parser {
         }
     }
 
-    private Expression parseFactor() throws ParseException {
+    private Expression parseFactor() throws ParserException {
         switch (nextType) {
-            case LEFTPAREN:
+            case LEFTPAREN_TOKEN:
                 advanceToken();
                 Expression e = parseExpression();
                 advanceToken();
                 return e;
-            case IDENT:
+            case ID_TOKEN:
                 String id = (String) nextToken.getTokenData();
                 advanceToken();
                 return parseVarcall(id);
-            case NUM:
+            case NUM_TOKEN:
                 int num = (int) nextToken.getTokenData();
                 advanceToken();
-                return new NumExpr(num);
+                return new NumExpression(num);
             default:
-                throw new ParseException("Parsing Factor: Expected (, ID, or NUM, got " + nextType.toString());
+                throw new ParserException("Parsing Factor: Expected (, ID, or NUM, got " + nextType.toString());
         }
     }
 
-    private Expression parseVarcall(String id) throws ParseException {
+    private Expression parseVarcall(String id) throws ParserException {
         switch (nextType) {
-            case LEFTPAREN:
+            case LEFTPAREN_TOKEN:
                 advanceToken();
-                CallExpr e = new CallExpr(id, parseArgs());
+                CallExpression e = new CallExpression(id, parseArgs());
                 advanceToken();
-                if (nextType != Token.TokenType.RIGHTPAREN) {
-                    throw new ParseException("Parsing Varcall: Expected ), got " + nextType.toString());
+                if (nextType != Token.TokenType.RIGHTPAREN_TOKEN) {
+                    throw new ParserException("Parsing Varcall: Expected ), got " + nextType.toString());
                 }
                 return e;
             default:
@@ -659,31 +662,31 @@ public class CMinusParser implements Parser {
         }
     }
 
-    private Expression parseVarPrime(String id) throws ParseException {
-        if (nextType == Token.TokenType.LEFTSQBRACKET) {
+    private Expression parseVarPrime(String id) throws ParserException {
+        if (nextType == Token.TokenType.LEFTSQBRACKET_TOKEN) {
             advanceToken();
             Expression e = parseExpression();
             advanceToken();
-            return new VarExpr(id, e);
+            return new VarExpressions(id, e);
         } else {
-            return new VarExpr(id);
+            return new VarExpressions(id);
         }
     }
 
-    private ArrayList<Expression> parseArgs() throws ParseException {
-        if (nextType == Token.TokenType.LEFTPAREN
-                || nextType == Token.TokenType.NUM
-                || nextType == Token.TokenType.IDENT) {
+    private ArrayList<Expression> parseArgs() throws ParserException {
+        if (nextType == Token.TokenType.LEFTPAREN_TOKEN
+                || nextType == Token.TokenType.NUM_TOKEN
+                || nextType == Token.TokenType.ID_TOKEN) {
             return parseArgList();
         } else {
             return new ArrayList();
         }
     }
 
-    private ArrayList<Expression> parseArgList() throws ParseException {
+    private ArrayList<Expression> parseArgList() throws ParserException {
         ArrayList<Expression> eList = new ArrayList<>();
         eList.add(parseExpression());
-        while (nextType == Token.TokenType.COMMA) {
+        while (nextType == Token.TokenType.COMMA_TOKEN) {
             advanceToken();
             eList.add(parseExpression());
         }

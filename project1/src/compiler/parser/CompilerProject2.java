@@ -1,6 +1,7 @@
-package compilerproject2;
+package compiler.parser;
 
 import java.io.*;
+import compiler.scanner.*;
 import java.util.*;
 
 public class CompilerProject2 {
@@ -18,14 +19,14 @@ public class CompilerProject2 {
 
         System.setOut(new PrintStream(new BufferedOutputStream(new FileOutputStream("ast.txt")), true));        
         
-        Scanner myScan = new CMinusScanner(inputFile);
+        CMinusScanner_jflex myScan = new CMinusScanner_jflex(inputFile);
         Parser myParser = new CMinusParser(myScan);
         Program myProgram;
         
         try {
             myProgram = myParser.parse();
             myProgram.print();
-        } catch (ParseException pe) {
+        } catch (ParserException pe) {
             System.err.println(pe.getMessage());
         }
     }

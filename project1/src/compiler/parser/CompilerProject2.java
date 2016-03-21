@@ -2,7 +2,6 @@ package compiler.parser;
 
 import java.io.*;
 import compiler.scanner.*;
-import java.util.*;
 
 public class CompilerProject2 {
 
@@ -30,8 +29,9 @@ public class CompilerProject2 {
         	System.err.println("Parser hit exception and stopped reading the "
         			+ "input file on line " + myScan.getCurrentLine() + 
         			", somewhere around column " + myScan.getCurrentColumn() + ".");
-            System.err.println(pe.getMessage());
-            pe.printStackTrace();
+            pe.printStackTrace(); // Includes exception message
         }
+        
+        inputScanner.close();
     }
 }

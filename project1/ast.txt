@@ -6,3 +6,46 @@ program:
         {
             statements:
                 if (
+                    EQUALTO
+                        v
+                        0
+                )
+                then:
+                    return: 
+                        u
+                else:
+                    return: 
+                        call: gcd
+                            params:
+                            v
+                            MINUS
+                                u
+                                MULTIPLY
+                                    u
+                                    v
+        }
+    function main returns LEFTPAREN_TOKEN
+        params:
+        {
+            local decls:
+                int x;
+                int y;
+            statements:
+                expr stmt: 
+                    =
+                        x
+                        call: input
+                            params:
+                expr stmt: 
+                    =
+                        y
+                        call: input
+                            params:
+                expr stmt: 
+                    call: output
+                        params:
+                        call: gcd
+                            params:
+                            x
+                            y
+        }

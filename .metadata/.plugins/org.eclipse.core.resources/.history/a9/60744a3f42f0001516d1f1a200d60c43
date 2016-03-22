@@ -461,8 +461,7 @@ public class CMinusParser implements Parser {
             case ID_TOKEN:
                 data = nextToken.getTokenData();
                 advanceToken();
-                Expression varExpression = new VarExpressions((String) data);
-                return parseExprPrime(varExpression);
+                return parseExprPrime(new VarExpressions((String) data));
             default:
                 throw new ParserException("Parsing Expr: Expected (, NUM, or ID, got " + nextType.toString());
         }

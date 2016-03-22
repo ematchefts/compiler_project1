@@ -461,8 +461,7 @@ public class CMinusParser implements Parser {
             case ID_TOKEN:
                 data = nextToken.getTokenData();
                 advanceToken();
-                Expression varExpression = new VarExpressions((String) data);
-                return parseExprPrime(varExpression);
+                return parseExprPrime(new VarExpressions((String) data));
             default:
                 throw new ParserException("Parsing Expr: Expected (, NUM, or ID, got " + nextType.toString());
         }
@@ -496,8 +495,7 @@ public class CMinusParser implements Parser {
             case GREATERTHANEQUALTO_TOKEN:
             case EQUALTO_TOKEN:
             case NOTEQUAL_TOKEN:
-            	Expression simExpression = parseSimExpr(e);
-                return simExpression;
+                return parseSimExpr(e);
             case RIGHTPAREN_TOKEN:
             case COMMA_TOKEN:
             case SEMICOLON_TOKEN:
@@ -569,23 +567,40 @@ public class CMinusParser implements Parser {
         }
         //advanceToken();
         Expression addExpr = parseAddExpr();
-        Expression binExpr = new BinaryExpression(addExprPrime, addExpr, o);
-        return binExpr;
+        return new BinaryExpression(addExprPrime, addExpr, o);
     }
 
     private Expression parseAddExprPrime(Expression e) throws ParserException {
-    	BinaryExpression.operation o = null;
-    	Expression tp = parseTermPrime(e);
-
-    	if (nextType == Token.TokenType.PLUS_TOKEN
-    			|| nextType == Token.TokenType.MINUS_TOKEN) {
-    		if (nextType == Token.TokenType.PLUS_TOKEN) {
-    			o = BinaryExpression.operation.PLUS;
-    		} else if (nextType == Token.TokenType.MINUS_TOKEN) {
-    			o = BinaryExpression.operation.MINUS;
-    		}
-    		advanceToken();
-            BinaryExpression be = new BinaryExpression(tp, parseTerm(), o);
+        BinaryExpression.operation o = null;
+        Expression tp;
+        if (nextType == Token.TokenType.MULTIPLY_TOKEN
+                || nextType == Token.TokenType.DIVIDE_TOKEN) {
+            //advanceToken();
+            tp = parseTermPrime(e);
+            Expression be = tp;
+            //advanceToken();
+            while (nextType == Token.TokenType.PLUS_TOKEN
+                    || nextType == Token.TokenType.MINUS_TOKEN) {
+                if (nextType == Token.TokenType.PLUS_TOKEN) {
+                    o = BinaryExpression.operation.PLUS;
+                } else if (nextType == Token.TokenType.MINUS_TOKEN) {
+                    o = BinaryExpression.operation.MINUS;
+                }
+                advanceToken();
+                be = new BinaryExpression(be, parseTerm(), o);
+                //advanceToken();
+            }
+            return be;
+        } else if (nextType == Token.TokenType.PLUS_TOKEN
+                || nextType == Token.TokenType.MINUS_TOKEN) {
+            if (nextType == Token.TokenType.PLUS_TOKEN) {
+                o = BinaryExpression.operation.PLUS;
+            } else if (nextType == Token.TokenType.MINUS_TOKEN) {
+                o = BinaryExpression.operation.MINUS;
+            }
+            advanceToken();
+            BinaryExpression be = new BinaryExpression(e, parseTerm(), o);
+            //advanceToken();
             while (nextType == Token.TokenType.PLUS_TOKEN
                     || nextType == Token.TokenType.MINUS_TOKEN) {
                 if (nextType == Token.TokenType.PLUS_TOKEN) {
@@ -594,10 +609,11 @@ public class CMinusParser implements Parser {
                     o = BinaryExpression.operation.MINUS;
                 }
                 be = new BinaryExpression(be, parseTerm(), o);
+                //advanceToken();
             }
             return be;
         } else {
-            return tp;
+            return e;
         }
     }
 

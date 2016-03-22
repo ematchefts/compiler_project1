@@ -19,10 +19,10 @@ public class BinaryExpression extends Expression {
     private Expression operand2;
     private operation op;
 
-    public BinaryExpression(Expression op1, Expression op2, operation o) {
-        operand1 = op1;
-        operand2 = op2;
-        op = o;
+    public BinaryExpression(Expression operand1, Expression operand2, operation op) {
+        operand1 = operand1;
+        operand2 = operand2;
+        op = op;
     }
 
     @Override

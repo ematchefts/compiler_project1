@@ -506,19 +506,30 @@ public class CMinusParser implements Parser {
 
     private Expression parseExprDP(VarExpressions e) throws ParserException {
         switch (nextType) {
+            case ASSIGN_TOKEN:
+                advanceToken();
+                return new AssignExpression(e, parseExpression());
             case MULTIPLY_TOKEN:
+            	return this.parseFactor();
             case DIVIDE_TOKEN:
+            	return this.parseFactor();
             case PLUS_TOKEN:
+            	return this.parseTerm();
             case MINUS_TOKEN:
+            	return this.parseTerm();
             case LESSTHANEQUALTO_TOKEN:
+            	return this.parseAddExpr();
             case LESSTHAN_TOKEN:
+            	return this.parseAddExpr();
             case GREATERTHAN_TOKEN:
             case GREATERTHANEQUALTO_TOKEN:
+            	return this.parseAddExpr();
             case EQUALTO_TOKEN:
+            	return this.parseAddExpr();
             case NOTEQUAL_TOKEN:
                 return parseSimExpr(e);
             default:
-            	return e;
+                return e;
         }
     }
 

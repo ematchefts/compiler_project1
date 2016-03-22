@@ -517,8 +517,12 @@ public class CMinusParser implements Parser {
             case EQUALTO_TOKEN:
             case NOTEQUAL_TOKEN:
                 return parseSimExpr(e);
+            case NUM_TOKEN:
+            case LEFTPAREN_TOKEN:
+            case ID_TOKEN:
+                return e;
             default:
-            	return e;
+            	throw new ParserException("Error occured while parsing double prime");
         }
     }
 

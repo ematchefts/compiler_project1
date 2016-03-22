@@ -350,7 +350,7 @@ public class CMinusParser implements Parser {
         ArrayList<Statement> returnList = new ArrayList<Statement>();
         while (nextType != Token.TokenType.RIGHTCURLYBRACE_TOKEN) {
             returnList.add(parseStatement());
-            //advanceToken();
+            advanceToken();
         }
         return returnList;
     }
@@ -484,10 +484,7 @@ public class CMinusParser implements Parser {
                 advanceToken();
                 ArrayList<Expression> args = parseArgs();
                 CallExpression ce = new CallExpression(((VarExpressions) e).getVar(), args);
-                if (nextType != Token.TokenType.RIGHTPAREN_TOKEN) {
-                    throw new ParserException("Parsing Expr': Expected ), got " + nextType.toString());
-                }
-                advanceToken();
+                //advanceToken();
                 return parseSimExpr(ce);
             case LEFTSQBRACKET_TOKEN:
                 advanceToken();
@@ -615,7 +612,7 @@ public class CMinusParser implements Parser {
                     o = BinaryExpression.operation.MINUS;
                 }
                 be = new BinaryExpression(be, parseTerm(), o);
-                advanceToken();
+                //advanceToken();
             }
             return be;
         } else {
@@ -668,7 +665,7 @@ public class CMinusParser implements Parser {
                 }
                 advanceToken();
                 be = new BinaryExpression(lhs, parseFactor(), o);
-                advanceToken();
+                //advanceToken();
             }
             return be;
         } else {
@@ -750,7 +747,10 @@ public class CMinusParser implements Parser {
         if (nextType == Token.TokenType.LEFTPAREN_TOKEN
                 || nextType == Token.TokenType.NUM_TOKEN
                 || nextType == Token.TokenType.ID_TOKEN) {
-            return parseArgList();
+        	ArrayList<Expression> argList = new ArrayList<Expression> ();
+        	argList = parseArgList();
+        	matchToken(Token.TokenType.RIGHTPAREN_TOKEN);
+            return argList;
         } else {
             return new ArrayList();
         }

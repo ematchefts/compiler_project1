@@ -151,7 +151,7 @@ public class CMinusParser implements Parser {
         
         switch (nextType) {
             case INT_TOKEN:
-            	this.matchFollowToken(Token.TokenType.ID_TOKEN);
+            	matchFollowToken(Token.TokenType.ID_TOKEN);
                 id = nextToken.getTokenData().toString();
                 advanceToken();
                 return parseDeclPrime(id);
@@ -222,7 +222,6 @@ public class CMinusParser implements Parser {
 
     private ArrayList<Param> parseParams() throws ParserException {
         ArrayList<Param> alp = new ArrayList<Param>();
-        //advanceToken();
         switch(nextType){
         case VOID_TOKEN:
             advanceToken();
@@ -267,11 +266,10 @@ public class CMinusParser implements Parser {
     }
 
     private CompoundStatement parseCompoundStmt() throws ParserException {
-        ArrayList<VarDeclaration> localDecls = new ArrayList<>();
-        ArrayList<Statement> stmtList = new ArrayList<>();
+        ArrayList<VarDeclaration> localDecls = new ArrayList<VarDeclaration>();
+        ArrayList<Statement> stmtList = new ArrayList<Statement>();
         matchToken(Token.TokenType.LEFTCURLYBRACE_TOKEN);
-        if (nextType == Token.TokenType.INT_TOKEN
-                || nextType == Token.TokenType.VOID_TOKEN) {
+        if (nextType == Token.TokenType.INT_TOKEN) {
             localDecls = parseLocalDecls();
         }
         if ( tokenTypeInArray(nextType, 
@@ -392,7 +390,6 @@ public class CMinusParser implements Parser {
         matchToken(Token.TokenType.LEFTPAREN_TOKEN);
         Expression e = parseExpression();
         matchToken(Token.TokenType.RIGHTPAREN_TOKEN);
-        advanceToken();
         Statement s = parseStatement();
         Statement elseStatement = null;
         if (nextType == Token.TokenType.ELSE_TOKEN) {
@@ -423,7 +420,7 @@ public class CMinusParser implements Parser {
             case ID_TOKEN:
             case NUM_TOKEN:
                 e = parseExpression();
-                advanceToken();
+                matchToken(Token.TokenType.SEMICOLON_TOKEN);
                 break;
             case SEMICOLON_TOKEN:
                 advanceToken();
@@ -462,11 +459,9 @@ public class CMinusParser implements Parser {
             case LEFTPAREN_TOKEN:
                 advanceToken();
                 e = parseExpression();
-                advanceToken();
-                if (nextType != Token.TokenType.RIGHTPAREN_TOKEN) {
-                    throw new ParserException("Parsing Expr: Expected ), got " + nextType.toString());
-                }
-                return parseSimExpr(e);
+                matchToken(Token.TokenType.RIGHTPAREN_TOKEN);
+                Expression exp = parseSimExpr(e);
+                return exp;
             case NUM_TOKEN:
                 data = nextToken.getTokenData();
                 advanceToken();
@@ -502,23 +497,14 @@ public class CMinusParser implements Parser {
                 }
                 return parseExprDP(new VarExpressions(((VarExpressions) e).getVar(), inBrackets));
             case MULTIPLY_TOKEN:
-            	return this.parseFactor();
             case DIVIDE_TOKEN:
-            	return this.parseFactor();
             case PLUS_TOKEN:
-            	return this.parseTerm();
             case MINUS_TOKEN:
-            	return this.parseTerm();
             case LESSTHANEQUALTO_TOKEN:
-            	return this.parseAddExpr();
             case LESSTHAN_TOKEN:
-            	return this.parseAddExpr();
             case GREATERTHAN_TOKEN:
-            	return this.parseAddExpr();
             case GREATERTHANEQUALTO_TOKEN:
-            	return this.parseAddExpr();
             case EQUALTO_TOKEN:
-            	return this.parseAddExpr();
             case NOTEQUAL_TOKEN:
                 return parseSimExpr(e);
             default:
@@ -581,7 +567,8 @@ public class CMinusParser implements Parser {
                 return addExprPrime;
         }
         advanceToken();
-        return new BinaryExpression(addExprPrime, parseAddExpr(), o);
+        Expression addExpr = parseAddExpr();
+        return new BinaryExpression(addExprPrime, addExpr, o);
     }
 
     private Expression parseAddExprPrime(Expression e) throws ParserException {
@@ -632,8 +619,7 @@ public class CMinusParser implements Parser {
     }
 
     private Expression parseAddExpr() throws ParserException {
-        Expression term = parseTerm();
-        //advanceToken();
+    	Expression term = parseTerm();
         BinaryExpression.operation o = null;
         Expression be = term;
         if (nextType == Token.TokenType.PLUS_TOKEN
@@ -645,7 +631,7 @@ public class CMinusParser implements Parser {
                 } else if (nextType == Token.TokenType.MINUS_TOKEN) {
                     o = BinaryExpression.operation.MINUS;
                 }
-                be = new BinaryExpression(be, parseTerm(), o);
+                be = new BinaryExpression(be, term, o);
                 advanceToken();
             }
             return be;

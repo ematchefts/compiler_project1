@@ -873,7 +873,7 @@ public class CMinusScanner_jflex implements Scanner {
             }
           case 35: break;
           case 6: 
-            { return new Token(Token.TokenType.INT_TOKEN, new Integer(yytext()));
+            { return new Token(Token.TokenType.NUM_TOKEN, new Integer(yytext()));
             }
           case 36: break;
           case 7: 

@@ -458,6 +458,22 @@ public class CMinusScanner_jflex implements Scanner {
 		return returnString;
 	}
 	
+	public Token.TokenType getTokenType(){
+		Token.TokenType returnType = Token.TokenType.EOF_TOKEN;
+		if (viewNextToken().getTokenType() != null) {
+			returnType = viewNextToken().getTokenType();
+		}
+		return returnType;
+	}
+	
+	public Object getTokenData() {
+		Object returnData = null;
+		if (viewNextToken().getTokenData() != null) {
+			returnData = viewNextToken().getTokenData();
+		}
+		return returnData;
+	}
+	
 	public int getCurrentLine(){
 		return yyline + 1;
 	}
@@ -963,7 +979,7 @@ public class CMinusScanner_jflex implements Scanner {
             }
           case 61: break;
           case 31: 
-            { return new Token(Token.TokenType.INT_TOKEN, new Integer(Integer.MIN_VALUE));
+            { return new Token(Token.TokenType.NUM_TOKEN, new Integer(Integer.MIN_VALUE));
             }
           case 62: break;
           default:

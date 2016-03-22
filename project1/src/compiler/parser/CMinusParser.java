@@ -507,8 +507,12 @@ public class CMinusParser implements Parser {
             case EQUALTO_TOKEN:
             case NOTEQUAL_TOKEN:
                 return parseSimExpr(e);
+            case RIGHTPAREN_TOKEN:
+            case COMMA_TOKEN:
+            case SEMICOLON_TOKEN:
+            	return e;
             default:
-                return e;
+                throw new ParserException ("Error parsing expression'");
         }
     }
 

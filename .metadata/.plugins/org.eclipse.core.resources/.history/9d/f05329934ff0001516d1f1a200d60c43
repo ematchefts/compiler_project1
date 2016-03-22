@@ -645,7 +645,7 @@ public class CMinusParser implements Parser {
                     o = BinaryExpression.operation.DIVIDE;
                 }
                 advanceToken();
-                be = new BinaryExpression(be, parseFactor(), o);
+                be = new BinaryExpression(lhs, parseFactor(), o);
                 //advanceToken();
             }
             return be;

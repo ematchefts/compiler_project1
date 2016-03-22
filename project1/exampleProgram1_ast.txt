@@ -21,7 +21,9 @@ program:
                             MINUS
                                 u
                                 MULTIPLY
-                                    u
+                                    DIVIDE
+                                        u
+                                        v
                                     v
         }
     function main returns LEFTPAREN_TOKEN

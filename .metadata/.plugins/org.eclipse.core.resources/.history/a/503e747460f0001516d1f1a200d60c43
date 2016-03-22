@@ -480,6 +480,7 @@ public class CMinusParser implements Parser {
             case LEFTSQBRACKET_TOKEN:
                 advanceToken();
                 Expression inBrackets = parseExpression();
+               // advanceToken();
                 if (nextType != Token.TokenType.RIGHTSQBRACKET_TOKEN) {
                     throw new ParserException("Parsing Expr': Expected ], got " + nextType.toString());
                 }

@@ -181,18 +181,14 @@ public class CMinusParser implements Parser {
     private Declarations parseDeclPrime(String id) throws ParserException {
     	switch(nextType){
     		case LEFTSQBRACKET_TOKEN:
-				int num = 0;
-	            advanceToken();
-	            if (nextToken.getTokenType() == Token.TokenType.NUM_TOKEN){
-	            	num = (int) nextToken.getTokenData();
-	            } else {
-	            	throw new ParserException("Unable to parse declaration. Was expecting a num token");
-	            }
-	            advanceToken();
-	            matchToken(Token.TokenType.RIGHTSQBRACKET_TOKEN);
-	            matchToken(Token.TokenType.SEMICOLON_TOKEN);
-	            
-	            return new VarDeclaration(id, num);
+            
+            matchFollowToken(Token.TokenType.NUM_TOKEN);
+            int num = (int) nextToken.getTokenData();
+            
+            matchFollowToken(Token.TokenType.RIGHTSQBRACKET_TOKEN);
+            matchFollowToken(Token.TokenType.SEMICOLON_TOKEN);
+            
+            return new VarDeclaration(id, num);
             
         case SEMICOLON_TOKEN:
             advanceToken();
@@ -245,9 +241,13 @@ public class CMinusParser implements Parser {
         advanceToken();
         if (nextType == Token.TokenType.LEFTSQBRACKET_TOKEN) {
             advanceToken();
-            matchToken(Token.TokenType.RIGHTSQBRACKET_TOKEN);
-        }
-        if (nextType == Token.TokenType.COMMA_TOKEN
+            if (nextType == Token.TokenType.RIGHTSQBRACKET_TOKEN) {
+                advanceToken();
+                return new Param(id, true);
+            } else {
+                throw new ParserException(Token.TokenType.RIGHTSQBRACKET_TOKEN, nextType, Param.class);
+            }
+        } else if (nextType == Token.TokenType.COMMA_TOKEN
                 || nextType == Token.TokenType.RIGHTPAREN_TOKEN) {
             if (nextType == Token.TokenType.COMMA_TOKEN) {
                 advanceToken();
@@ -480,6 +480,7 @@ public class CMinusParser implements Parser {
             case LEFTSQBRACKET_TOKEN:
                 advanceToken();
                 Expression inBrackets = parseExpression();
+                advanceToken();
                 if (nextType != Token.TokenType.RIGHTSQBRACKET_TOKEN) {
                     throw new ParserException("Parsing Expr': Expected ], got " + nextType.toString());
                 }
@@ -499,7 +500,6 @@ public class CMinusParser implements Parser {
             case RIGHTPAREN_TOKEN:
             case COMMA_TOKEN:
             case SEMICOLON_TOKEN:
-            case RIGHTSQBRACKET_TOKEN:
             	return e;
             default:
                 throw new ParserException ("Error parsing expression'");

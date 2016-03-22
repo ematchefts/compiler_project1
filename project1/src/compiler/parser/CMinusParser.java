@@ -482,7 +482,8 @@ public class CMinusParser implements Parser {
                 return new AssignExpression((VarExpressions) e, parseExpression());
             case LEFTPAREN_TOKEN:
                 advanceToken();
-                CallExpression ce = new CallExpression(((VarExpressions) e).getVar(), parseArgs());
+                ArrayList<Expression> args = parseArgs();
+                CallExpression ce = new CallExpression(((VarExpressions) e).getVar(), args);
                 if (nextType != Token.TokenType.RIGHTPAREN_TOKEN) {
                     throw new ParserException("Parsing Expr': Expected ), got " + nextType.toString());
                 }

@@ -41,10 +41,6 @@ public class CMinusParser implements Parser {
         return nextToken;
     }
     
-    private Token getCurrentToken(){
-    	return nextToken;
-    }
-    
     private Token viewNextToken(){
     	return scan.viewNextToken();
     }
@@ -157,10 +153,12 @@ public class CMinusParser implements Parser {
             case INT_TOKEN:
             	this.matchFollowToken(Token.TokenType.ID_TOKEN);
                 id = nextToken.getTokenData().toString();
+                advanceToken();
                 return parseDeclPrime(id);
             case VOID_TOKEN:
             	matchFollowToken(Token.TokenType.ID_TOKEN);
                 id = nextToken.getTokenData().toString();
+  
                 return parseFunDecl(nextType, id);
             default:
             	throw new ParserException(new Token.TokenType[]{
@@ -188,7 +186,7 @@ public class CMinusParser implements Parser {
 
     private Declarations parseDeclPrime(String id) throws ParserException {
     	switch(nextType){
-    	case LEFTSQBRACKET_TOKEN:
+    		case LEFTSQBRACKET_TOKEN:
             
             matchFollowToken(Token.TokenType.NUM_TOKEN);
             int num = (int) nextToken.getTokenData();
@@ -203,7 +201,7 @@ public class CMinusParser implements Parser {
             return new VarDeclaration(id);
             
         case LEFTPAREN_TOKEN:
-            return parseFunDeclPrime(Token.TokenType.NUM_TOKEN, id);
+            return parseFunDeclPrime(Token.TokenType.INT_TOKEN, id);
             
         default:
             throw new ParserException(new Token.TokenType[]{
@@ -218,7 +216,6 @@ public class CMinusParser implements Parser {
         matchToken(Token.TokenType.LEFTPAREN_TOKEN);
         ArrayList<Param> params = parseParams();
         matchToken(Token.TokenType.RIGHTPAREN_TOKEN);
-        matchFollowToken(Token.TokenType.LEFTCURLYBRACE_TOKEN);
         CompoundStatement cs = parseCompoundStmt();
         return new FunDeclaration(typeSpec, id, params, cs);
     }
@@ -391,12 +388,10 @@ public class CMinusParser implements Parser {
     }
 
     private IfStatement parseIf() throws ParserException {
-        this.matchToken(Token.TokenType.LEFTPAREN_TOKEN);
-        this.advanceToken();
+    	advanceToken();
+        matchToken(Token.TokenType.LEFTPAREN_TOKEN);
         Expression e = parseExpression();
-        if (nextType != Token.TokenType.RIGHTPAREN_TOKEN) {
-            throw new ParserException("Parsing IfStmt: Expected ), got " + nextType.toString());
-        }
+        matchToken(Token.TokenType.RIGHTPAREN_TOKEN);
         advanceToken();
         Statement s = parseStatement();
         Statement elseStatement = null;

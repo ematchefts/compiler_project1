@@ -17,7 +17,7 @@ public class CMinusParser implements Parser {
     public CMinusParser(CMinusScanner_jflex scanner) {
         scan = scanner;
         try {
-			scan.setNextToken(scan.scanToken());
+  			scan.setNextToken(scan.scanToken());
 			nextToken = new Token(scan.getTokenType(), scan.getTokenData());
 			nextType = nextToken.getTokenType();
 			
@@ -158,7 +158,7 @@ public class CMinusParser implements Parser {
             case VOID_TOKEN:
             	matchFollowToken(Token.TokenType.ID_TOKEN);
                 id = nextToken.getTokenData().toString();
-  
+                advanceToken();
                 return parseFunDecl(nextType, id);
             default:
             	throw new ParserException(new Token.TokenType[]{
@@ -170,15 +170,9 @@ public class CMinusParser implements Parser {
     private FunDeclaration parseFunDecl(Token.TokenType typespec, String id) throws ParserException {
         ArrayList<Param> ps;
         CompoundStatement cs;
-        if (nextType != Token.TokenType.LEFTPAREN_TOKEN) {
-            throw new ParserException("Parsing fun-decl: Expected (, got " + nextType.toString());
-        }
-        advanceToken();
+        matchToken(Token.TokenType.LEFTPAREN_TOKEN);
         ps = parseParams();
-        if (nextType != Token.TokenType.RIGHTPAREN_TOKEN) {
-            throw new ParserException("Parsing fun-decl: Expected ), got " + nextType.toString());
-        }
-        advanceToken();
+        matchToken(Token.TokenType.RIGHTPAREN_TOKEN);
 
         cs = parseCompoundStmt();
         return new FunDeclaration(typespec, id, ps, cs);
@@ -350,7 +344,7 @@ public class CMinusParser implements Parser {
         ArrayList<Statement> returnList = new ArrayList<Statement>();
         while (nextType != Token.TokenType.RIGHTCURLYBRACE_TOKEN) {
             returnList.add(parseStatement());
-            advanceToken();
+            //advanceToken();
         }
         return returnList;
     }

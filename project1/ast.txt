@@ -1,0 +1,8 @@
+program:
+    function gcd returns INT_TOKEN
+        params:
+            u
+            v
+        {
+            statements:
+                if (

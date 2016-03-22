@@ -432,7 +432,10 @@ public class CMinusParser implements Parser {
             case ID_TOKEN:
             case NUM_TOKEN:
                 e = parseExpression();
-                matchToken(Token.TokenType.SEMICOLON_TOKEN);
+                if (nextType != Token.TokenType.SEMICOLON_TOKEN) {
+                    throw new ParserException("Parsing ExprStmt: Expected ;, got " + nextType.toString());
+                }
+                advanceToken();
                 break;
             case SEMICOLON_TOKEN:
                 advanceToken();
@@ -475,6 +478,7 @@ public class CMinusParser implements Parser {
                 advanceToken();
                 ArrayList<Expression> args = parseArgs();
                 CallExpression ce = new CallExpression(((VarExpressions) e).getVar(), args);
+                //advanceToken();
                 return parseSimExpr(ce);
             case LEFTSQBRACKET_TOKEN:
                 advanceToken();
@@ -539,32 +543,26 @@ public class CMinusParser implements Parser {
         switch (nextType) {
             case LESSTHAN_TOKEN:
                 o = BinaryExpression.operation.LESSTHAN;
-                advanceToken();
                 break;
             case GREATERTHAN_TOKEN:
                 o = BinaryExpression.operation.GREATERTHAN;
-                advanceToken();
                 break;
             case EQUALTO_TOKEN:
                 o = BinaryExpression.operation.EQUALTO;
-                advanceToken();
                 break;
             case NOTEQUAL_TOKEN:
                 o = BinaryExpression.operation.NOTEQUAL;
-                advanceToken();
                 break;
             case LESSTHANEQUALTO_TOKEN:
                 o = BinaryExpression.operation.LESSTHANEQUALTO;
-                advanceToken();
                 break;
             case GREATERTHANEQUALTO_TOKEN:
                 o = BinaryExpression.operation.GREATERTHANEQUALTO;
-                advanceToken();
                 break;
             default:
                 return addExprPrime;
         }
-        //advanceToken();
+        advanceToken();
         Expression addExpr = parseAddExpr();
         return new BinaryExpression(addExprPrime, addExpr, o);
     }
@@ -748,7 +746,6 @@ public class CMinusParser implements Parser {
         	matchToken(Token.TokenType.RIGHTPAREN_TOKEN);
             return argList;
         } else {
-        	matchToken(Token.TokenType.RIGHTPAREN_TOKEN);
             return new ArrayList();
         }
     }

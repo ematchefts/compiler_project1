@@ -394,15 +394,9 @@ public class CMinusParser implements Parser {
     }
 
     private WhileStatement parseWhile() throws ParserException {
-        if (nextType != Token.TokenType.LEFTPAREN_TOKEN) {
-            throw new ParserException("Parsing WhileStmt: Expected (, got " + nextType.toString());
-        }
-        advanceToken();
+        matchToken(Token.TokenType.LEFTPAREN_TOKEN);
         Expression e = parseExpression();
-        if (nextType != Token.TokenType.RIGHTPAREN_TOKEN) {
-            throw new ParserException("Parsing WhileStmt: Expected ), got " + nextType.toString());
-        }
-        advanceToken();
+        matchToken(Token.TokenType.RIGHTPAREN_TOKEN);
         Statement s = parseStatement();
         return new WhileStatement(e, s);
     }
@@ -597,11 +591,13 @@ public class CMinusParser implements Parser {
                     || nextType == Token.TokenType.MINUS_TOKEN) {
                 if (nextType == Token.TokenType.PLUS_TOKEN) {
                     o = BinaryExpression.operation.PLUS;
+                    advanceToken();
                 } else if (nextType == Token.TokenType.MINUS_TOKEN) {
                     o = BinaryExpression.operation.MINUS;
+                    advanceToken();
                 }
+                term = parseTerm();
                 be = new BinaryExpression(be, term, o);
-                advanceToken();
             }
             return be;
         }

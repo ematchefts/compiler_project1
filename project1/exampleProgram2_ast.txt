@@ -1,0 +1,203 @@
+program:
+    int x[10];
+    function minloc returns INT_TOKEN
+        params:
+            a
+            low
+            high
+        {
+            local decls:
+                int i;
+                int x;
+                int k;
+            statements:
+                expr stmt: 
+                    =
+                        k
+                        low
+                expr stmt: 
+                    =
+                        x
+                        a
+                        [
+                            low
+                        ]
+                expr stmt: 
+                    =
+                        i
+                        PLUS
+                            low
+                            1
+                while(
+                    LESSTHAN
+                        i
+                        high
+                )
+                do:
+                    {
+                        statements:
+                            if (
+                                LESSTHAN
+                                    a
+                                    [
+                                        i
+                                    ]
+                                    x
+                            )
+                            then:
+                                {
+                                    statements:
+                                        expr stmt: 
+                                            =
+                                                x
+                                                a
+                                                [
+                                                    i
+                                                ]
+                                        expr stmt: 
+                                            =
+                                                k
+                                                i
+                                }
+                            expr stmt: 
+                                =
+                                    i
+                                    PLUS
+                                        i
+                                        1
+                    }
+                return: 
+                    k
+        }
+    function sort returns VOID_TOKEN
+        params:
+            a
+            low
+            high
+        {
+            local decls:
+                int i;
+                int k;
+            statements:
+                expr stmt: 
+                    =
+                        i
+                        low
+                while(
+                    LESSTHAN
+                        i
+                        MINUS
+                            high
+                            1
+                )
+                do:
+                    {
+                        local decls:
+                            int t;
+                        statements:
+                            expr stmt: 
+                                =
+                                    k
+                                    call: minloc
+                                        params:
+                                        a
+                                        i
+                                        high
+                            expr stmt: 
+                                =
+                                    t
+                                    a
+                                    [
+                                        k
+                                    ]
+                            expr stmt: 
+                                =
+                                    a
+                                    [
+                                        k
+                                    ]
+                                    a
+                                    [
+                                        i
+                                    ]
+                            expr stmt: 
+                                =
+                                    a
+                                    [
+                                        i
+                                    ]
+                                    t
+                            expr stmt: 
+                                =
+                                    i
+                                    PLUS
+                                        i
+                                        1
+                    }
+        }
+    function main returns VOID_TOKEN
+        params:
+        {
+            local decls:
+                int i;
+            statements:
+                expr stmt: 
+                    =
+                        i
+                        0
+                while(
+                    LESSTHAN
+                        i
+                        10
+                )
+                do:
+                    {
+                        statements:
+                            expr stmt: 
+                                =
+                                    x
+                                    [
+                                        i
+                                    ]
+                                    call: input
+                                        params:
+                            expr stmt: 
+                                =
+                                    i
+                                    PLUS
+                                        i
+                                        1
+                    }
+                expr stmt: 
+                    call: sort
+                        params:
+                        x
+                        0
+                        10
+                expr stmt: 
+                    =
+                        i
+                        0
+                while(
+                    LESSTHAN
+                        i
+                        10
+                )
+                do:
+                    {
+                        statements:
+                            expr stmt: 
+                                call: output
+                                    params:
+                                    x
+                                    [
+                                        i
+                                    ]
+                            expr stmt: 
+                                =
+                                    i
+                                    PLUS
+                                        i
+                                        1
+                    }
+        }

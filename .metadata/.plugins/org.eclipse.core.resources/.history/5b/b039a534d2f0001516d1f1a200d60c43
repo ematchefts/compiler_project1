@@ -160,7 +160,7 @@ public class CMinusParser implements Parser {
             	matchFollowToken(Token.TokenType.ID_TOKEN);
                 id = nextToken.getTokenData().toString();
                 advanceToken();
-                return parseFunDecl(Token.TokenType.VOID_TOKEN, id);
+                return parseFunDecl(nextType, id);
             default:
             	throw new ParserException(new Token.TokenType[]{
                 		Token.TokenType.VOID_TOKEN, 
@@ -422,21 +422,20 @@ public class CMinusParser implements Parser {
 
     private ExpressionStatement parseExprStmt() throws ParserException {
         Expression e = null;
-        if(nextType == TokenType.LEFTPAREN_TOKEN ||
-    		nextType ==TokenType.ID_TOKEN ||
-    		nextType == TokenType.NUM_TOKEN){
+        if(nextType == TokenType.LEFTPAREN_TOKEN || TokenType.ID_TOKEN || TokenType.NUM_TOKEN){
 	        while (nextType == TokenType.LEFTPAREN_TOKEN ||
 	        		nextType == TokenType.ID_TOKEN ||
 	        		nextType == TokenType.NUM_TOKEN) {
 	                e = parseExpression();
+	                advanceToken();
 	        }
-        }
-        if(nextType ==  TokenType.SEMICOLON_TOKEN){
+        } else if(nextType ==  TokenType.SEMICOLON_TOKEN){
                 advanceToken();
-                return new ExpressionStatement(e);
+                break;
         } else {
                 throw new ParserException("Parsing ExprStmt: Expected (, ID, NUM, or ;, got " + nextType.toString());
         }
+        return new ExpressionStatement(e);
     }
 
     private Expression parseExpression() throws ParserException {
@@ -513,17 +512,8 @@ public class CMinusParser implements Parser {
             case EQUALTO_TOKEN:
             case NOTEQUAL_TOKEN:
                 return parseSimExpr(e);
-            case NUM_TOKEN:
-            case LEFTPAREN_TOKEN:
-            case ID_TOKEN:
-            case RIGHTPAREN_TOKEN:
-            case SEMICOLON_TOKEN:
-            case COMMA_TOKEN:
+            default:
             	return e;
-            case ASSIGN_TOKEN:
-            	return parseExprPrime(e);
-        	default:
-        		throw new ParserException("Error parsing expression double prime");
         }
     }
 

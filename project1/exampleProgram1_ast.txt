@@ -26,7 +26,7 @@ program:
                                         v
                                     v
         }
-    function main returns LEFTPAREN_TOKEN
+    function main returns VOID_TOKEN
         params:
         {
             local decls:

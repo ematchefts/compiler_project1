@@ -8,6 +8,13 @@ import java.util.*;
 import compiler.scanner.*;
 import compiler.scanner.Token.TokenType;
 
+/**
+ * This class is the main working class for a CMinus parser. 
+ * It parses each part of the grammar and stores it in the appropriate class.
+ * 
+ * @author Elizabeth Matchefts & Benjamin Seymour
+ *
+ */
 public class CMinusParser implements Parser {
 
     private CMinusScanner_jflex scan;
@@ -15,6 +22,11 @@ public class CMinusParser implements Parser {
     private Token nextToken;
     private Token.TokenType nextType;
 
+    /**
+     * CMinus Parser constructor
+     * 
+     * @param scanner The CMinus JFlex Scanner
+     */
     public CMinusParser(CMinusScanner_jflex scanner) {
         scan = scanner;
         try {
@@ -36,16 +48,25 @@ public class CMinusParser implements Parser {
 		}
     }
 
+    /**
+     * This function gets the next token from the scanner
+     * 
+     * @return nextToken The next token from the scaner
+     */
     private Token advanceToken() {
         nextToken = scan.getNextToken();
         nextType = nextToken.getTokenType();
         return nextToken;
     }
     
-    private Token viewNextToken(){
-    	return scan.viewNextToken();
-    }
-    
+    /**
+     * This token matches the current with a specific type input
+     * and fetches the next token
+     * 
+     * @param matchType The type of token the current token should match
+     * @return The next token
+     * @throws ParserException 
+     */
     private Token matchToken(Token.TokenType matchType) throws ParserException {
     	if(nextToken.getTokenType() != matchType){
     		throw new ParserException(matchType, nextToken.getTokenType());
@@ -57,17 +78,14 @@ public class CMinusParser implements Parser {
     	}
     }
     
-    private Token matchTokenSet(Token.TokenType[] matchArray) throws ParserException{
-    	if( !tokenTypeInArray(nextToken.getTokenType(), matchArray) ){
-    		throw new ParserException(matchArray, nextToken.getTokenType());
-    	}
-    	else{
-    		Token returnToken = nextToken;
-    		advanceToken();
-    		return returnToken;
-    	}
-    }
-    
+    /**
+     * This token matches the current token with a specific type input, but does 
+     * not fetch the next token 
+     * 
+     * @param matchType The type of token 
+     * @return The current token
+     * @throws ParserException
+     */
     private Token matchTokenNoAdvance(Token.TokenType matchType) throws ParserException{
     	if(nextToken.getTokenType() != matchType){
     		throw new ParserException(matchType, nextToken.getTokenType());
@@ -77,15 +95,13 @@ public class CMinusParser implements Parser {
     	}
     }
     
-    private Token matchTokenSetNoAdvance(Token.TokenType[] matchArray) throws ParserException{
-    	if( !tokenTypeInArray(nextToken.getTokenType(), matchArray) ){
-    		throw new ParserException(matchArray, nextToken.getTokenType());
-    	}
-    	else{
-    		return nextToken;
-    	}
-    }
-    
+    /**
+     * This token matches the token after the current one 
+     * 
+     * @param matchType The type the next token should match
+     * @return The next token
+     * @throws ParserException
+     */
     private Token matchFollowToken(Token.TokenType matchType) throws ParserException {
     	if(advanceToken().getTokenType() != matchType){
     		throw new ParserException(matchType, nextToken.getTokenType());
@@ -95,35 +111,13 @@ public class CMinusParser implements Parser {
     	}
     }
     
-    private Token matchFollowTokenNoAdvance(Token.TokenType matchType) throws ParserException {
-    	Token returnToken = viewNextToken(); 
-    	if(returnToken.getTokenType() != matchType){
-    		throw new ParserException(matchType, nextToken.getTokenType());
-    	}
-    	else{
-    		return returnToken;
-    	}
-    }
-    
-    private Token matchFollowSet(Token.TokenType[] matchArray) throws ParserException{
-    	if( !tokenTypeInArray(viewNextToken().getTokenType(), matchArray) ){
-    		throw new ParserException(matchArray, nextToken.getTokenType());
-    	}
-    	else{
-    		return advanceToken();
-    	}
-    }
-    
-    private Token matchFollowSetNoAdvance(Token.TokenType[] matchArray) throws ParserException{
-    	Token returnToken = viewNextToken();
-    	if( !tokenTypeInArray(returnToken.getTokenType(), matchArray) ){
-    		throw new ParserException(matchArray, nextToken.getTokenType());
-    	}
-    	else{
-    		return returnToken;
-    	}
-    }
-    
+    /**
+     * Checks to see if a specific token type is in an array of token types
+     * 
+     * @param toCheck The specific token type being checked for
+     * @param array the array of token types being checked
+     * @return true or false - whether the token type is in the array
+     */
     private boolean tokenTypeInArray(Token.TokenType toCheck, Token.TokenType[] array){
     	for(Token.TokenType pattern: array){
     		if(toCheck == pattern){
@@ -134,6 +128,11 @@ public class CMinusParser implements Parser {
     }
 
     @Override
+    /**
+     * This function always starts the parse by parsing a program grammar
+     * 
+  	 * @throws ParserException
+     */
     public Program parse() throws ParserException {
         ArrayList<Declarations> declList = new ArrayList<Declarations>();
         advanceToken();
@@ -147,6 +146,12 @@ public class CMinusParser implements Parser {
         return new Program(declList);
     }
 
+    /**
+     * This function parses the declaration grammar
+     * 
+     * @return a Declaration
+     * @throws ParserException
+     */
     private Declarations parseDecl() throws ParserException {
         String id;
         
@@ -168,6 +173,14 @@ public class CMinusParser implements Parser {
         }
     }
 
+    /**
+     * Parses a function declaration
+     * 
+     * @param typespec The return type of the function
+     * @param id The name of the function
+     * @return The function declaration
+     * @throws ParserException
+     */
     private FunDeclaration parseFunDecl(Token.TokenType typespec, String id) throws ParserException {
         ArrayList<Param> ps;
         CompoundStatement cs;
@@ -179,6 +192,13 @@ public class CMinusParser implements Parser {
         return new FunDeclaration(typespec, id, ps, cs);
     }
 
+    /**
+     * Parses a declaration' function
+     * 
+     * @param id The name of the function
+     * @return the declaration
+     * @throws ParserException
+     */
     private Declarations parseDeclPrime(String id) throws ParserException {
     	switch(nextType){
     		case LEFTSQBRACKET_TOKEN:
@@ -211,6 +231,14 @@ public class CMinusParser implements Parser {
 
     }
 
+    /**
+     * Parses a function declaration'
+     * 
+     * @param typeSpec The function declaration return type
+     * @param id the name of the function declaration
+     * @return function declaration
+     * @throws ParserException
+     */
     private FunDeclaration parseFunDeclPrime(Token.TokenType typeSpec, String id) throws ParserException {
         matchToken(Token.TokenType.LEFTPAREN_TOKEN);
         ArrayList<Param> params = parseParams();
@@ -239,6 +267,12 @@ public class CMinusParser implements Parser {
         }
     }
 
+    /**
+     * Parses parameters
+     * 
+     * @return the parameters
+     * @throws ParserException
+     */
     private Param parseParam() throws ParserException {
         matchToken(Token.TokenType.INT_TOKEN);
         matchTokenNoAdvance(Token.TokenType.ID_TOKEN);
@@ -260,6 +294,12 @@ public class CMinusParser implements Parser {
 
     }
 
+    /**
+     * Parses a compound statement
+     * 
+     * @return the compound statement
+     * @throws ParserException
+     */
     private CompoundStatement parseCompoundStmt() throws ParserException {
         ArrayList<VarDeclaration> localDecls = new ArrayList<VarDeclaration>();
         ArrayList<Statement> stmtList = new ArrayList<Statement>();
@@ -288,6 +328,12 @@ public class CMinusParser implements Parser {
         }
     }
 
+    /**
+     * Parses local declarations
+     * 
+     * @return an array list of local declarations
+     * @throws ParserException
+     */
     private ArrayList<VarDeclaration> parseLocalDecls() throws ParserException {
         ArrayList<VarDeclaration> returnList = new ArrayList<VarDeclaration>();
         while ( !tokenTypeInArray(nextType, 
@@ -308,6 +354,12 @@ public class CMinusParser implements Parser {
         return returnList;
     }
 
+    /**
+     * Parses variable declarations
+     * 
+     * @return The variable declaration
+     * @throws ParserException
+     */
     private VarDeclaration parseVarDecl() throws ParserException {
         String returnID;
         int returnNum;
@@ -341,6 +393,12 @@ public class CMinusParser implements Parser {
         return returnVarDecl;
     }
 
+    /**
+     * Parses a statement list
+     * 
+     * @return array list of statements
+     * @throws ParserException
+     */
     private ArrayList<Statement> parseStmtList() throws ParserException {
         ArrayList<Statement> returnList = new ArrayList<Statement>();
         while (nextType != Token.TokenType.RIGHTCURLYBRACE_TOKEN) {
@@ -349,6 +407,12 @@ public class CMinusParser implements Parser {
         return returnList;
     }
 
+    /**
+     * Parses a statement
+     * 
+     * @return the Statement
+     * @throws ParserException
+     */
     private Statement parseStatement() throws ParserException {
         Statement returnStatement = null;
         switch (nextType) {
@@ -379,6 +443,12 @@ public class CMinusParser implements Parser {
         return returnStatement;
     }
 
+    /**
+     * Parses an if statement
+     * 
+     * @return the if statement
+     * @throws ParserException
+     */
     private IfStatement parseIf() throws ParserException {
     	advanceToken();
         matchToken(Token.TokenType.LEFTPAREN_TOKEN);
@@ -394,6 +464,12 @@ public class CMinusParser implements Parser {
         return ifStatement;
     }
 
+    /**
+     * Parses a while statement
+     * 
+     * @return the while statement
+     * @throws ParserException
+     */
     private WhileStatement parseWhile() throws ParserException {
         matchToken(Token.TokenType.LEFTPAREN_TOKEN);
         Expression e = parseExpression();
@@ -402,6 +478,12 @@ public class CMinusParser implements Parser {
         return new WhileStatement(e, s);
     }
 
+    /**
+     * Parses a return statement
+     * 
+     * @return the return statement
+     * @throws ParserException
+     */
     private ReturnStatement parseReturn() throws ParserException {
         Expression e = null;
         switch (nextType) {
@@ -420,6 +502,12 @@ public class CMinusParser implements Parser {
         return new ReturnStatement(e);
     }
 
+    /**
+     * Parses an expression statement
+     * 
+     * @return the expression statement
+     * @throws ParserException
+     */
     private ExpressionStatement parseExprStmt() throws ParserException {
         Expression e = null;
         if(nextType == TokenType.LEFTPAREN_TOKEN ||
@@ -439,6 +527,12 @@ public class CMinusParser implements Parser {
         }
     }
 
+    /**
+     * Parses an expression
+     * 
+     * @return the expression
+     * @throws ParserException
+     */
     private Expression parseExpression() throws ParserException {
         Expression e;
         Object data;
@@ -463,6 +557,12 @@ public class CMinusParser implements Parser {
         }
     }
 
+    /**
+     * Parses an expression'
+     * @param e the expression related to the expression'
+     * @return the expression after parsing
+     * @throws ParserException
+     */
     private Expression parseExprPrime(Expression e) throws ParserException {
         switch (nextType) {
             case ASSIGN_TOKEN:
@@ -500,6 +600,13 @@ public class CMinusParser implements Parser {
         }
     }
 
+    /**
+     * Parses an expression''
+     * 
+     * @param e the expression related to the expression''
+     * @return the expression after parsing
+     * @throws ParserException
+     */
     private Expression parseExprDP(VarExpressions e) throws ParserException {
         switch (nextType) {
             case MULTIPLY_TOKEN:
@@ -527,6 +634,13 @@ public class CMinusParser implements Parser {
         }
     }
 
+    /**
+     * Parses a simple expression
+     * 
+     * @param e the expression related to the simple expression
+     * @return the expression after parsing
+     * @throws ParserException
+     */
     private Expression parseSimExpr(Expression e) throws ParserException {
         Expression addExprPrime = parseAddExprPrime(e);
         BinaryExpression.operation o;
@@ -558,12 +672,18 @@ public class CMinusParser implements Parser {
             default:
                 return addExprPrime;
         }
-        //advanceToken();
+       
         Expression addExpr = parseAddExpr();
         Expression binExpr = new BinaryExpression(addExprPrime, addExpr, o);
         return binExpr;
     }
 
+    /**
+     * Parses an additive-expression'
+     * @param e the expression related to the additive-expression'
+     * @return the expression after parsing
+     * @throws ParserException
+     */
     private Expression parseAddExprPrime(Expression e) throws ParserException {
     	BinaryExpression.operation o = null;
     	Expression tp = parseTermPrime(e);
@@ -592,6 +712,12 @@ public class CMinusParser implements Parser {
         }
     }
 
+    /**
+     * Parses an additive expression
+     * 
+     * @return The expression
+     * @throws ParserException
+     */
     private Expression parseAddExpr() throws ParserException {
     	Expression term = parseTerm();
         BinaryExpression.operation o = null;
@@ -615,6 +741,12 @@ public class CMinusParser implements Parser {
         return term;
     }
 
+    /**
+     * Parses a term
+     * 
+     * @return The expression
+     * @throws ParserException
+     */
     private Expression parseTerm() throws ParserException {
         //term -> factor { mulop factor }
         Expression lhs = parseFactor();
@@ -647,9 +779,14 @@ public class CMinusParser implements Parser {
         }
     }
 
+    /**
+     * Parses a term'
+     * 
+     * @param e the expression related to the term'
+     * @return the expression after parsing
+     * @throws ParserException
+     */
     private Expression parseTermPrime(Expression e) throws ParserException {
-
-        //term -> factor { mulop factor }
     	BinaryExpression.operation o = null;
     	BinaryExpression be = null;
         if (nextType == Token.TokenType.MULTIPLY_TOKEN
@@ -671,6 +808,12 @@ public class CMinusParser implements Parser {
         }
     }
 
+    /**
+     * Parses a factor
+     * 
+     * @return the expression
+     * @throws ParserException
+     */
     private Expression parseFactor() throws ParserException {
         switch (nextType) {
             case LEFTPAREN_TOKEN:
@@ -691,6 +834,12 @@ public class CMinusParser implements Parser {
         }
     }
 
+    /**
+     * Parses a variable function call
+     * @param id the return type of the call
+     * @return The expression
+     * @throws ParserException
+     */
     private Expression parseVarcall(String id) throws ParserException {
         switch (nextType) {
             case LEFTPAREN_TOKEN:
@@ -706,6 +855,13 @@ public class CMinusParser implements Parser {
         }
     }
 
+    /**
+     * Parses a var'
+     * 
+     * @param id The return type of the var'
+     * @return the expression
+     * @throws ParserException
+     */
     private Expression parseVarPrime(String id) throws ParserException {
         if (nextType == Token.TokenType.LEFTSQBRACKET_TOKEN) {
             advanceToken();
@@ -717,6 +873,12 @@ public class CMinusParser implements Parser {
         }
     }
 
+    /**
+     * Parses arguments
+     * 
+     * @return an array list of the arguments
+     * @throws ParserException
+     */
     private ArrayList<Expression> parseArgs() throws ParserException {
         if (nextType == Token.TokenType.LEFTPAREN_TOKEN
                 || nextType == Token.TokenType.NUM_TOKEN
@@ -727,10 +889,16 @@ public class CMinusParser implements Parser {
             return argList;
         } else {
         	matchToken(Token.TokenType.RIGHTPAREN_TOKEN);
-            return new ArrayList();
+            return new ArrayList<Expression>();
         }
     }
 
+    /**
+     * Parses a list of arguments
+     * 
+     * @return the array list of arguments
+     * @throws ParserException
+     */
     private ArrayList<Expression> parseArgList() throws ParserException {
         ArrayList<Expression> eList = new ArrayList<>();
         eList.add(parseExpression());

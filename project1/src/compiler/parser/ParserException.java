@@ -1,7 +1,13 @@
 package compiler.parser;
 
 import compiler.scanner.Token;
-
+/**
+ * Parser Exception class. Exception occurs when an error is found
+ * while parsing the code file
+ * 
+ * @author ElizabethMatchefts & Benjamin Seymour
+ *
+ */
 public class ParserException extends Exception {
 
 	/**

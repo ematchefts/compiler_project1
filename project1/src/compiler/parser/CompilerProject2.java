@@ -6,6 +6,9 @@ import compiler.scanner.*;
 public class CompilerProject2 {
 
     /**
+     * This function opens a file and buffered stream for the scanner to red the input code file, then 
+     * calls the parser constructor to parse the code.
+     * 
      * @param args the command line arguments
      */
     public static void main(String[] args) throws FileNotFoundException, IOException {

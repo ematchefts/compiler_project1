@@ -1,12 +1,25 @@
 package compiler.parser;
 
+/**
+ * This class is a subclass of Statement.
+ * It contains while statements
+ * 
+ * @author Elizabeth Matchefts & Benjamin Seymour
+ *
+ */
 public class WhileStatement extends Statement {
 
     private Expression expression;
     private Statement statement;
 
+    /**
+     * While statement constructor
+     * 
+     * @param e The expression of the while statement condition
+     * @param st The statement inside of the while statement
+     */
     public WhileStatement(Expression e, Statement st) {
-        expression = e;
+        expression = e; 
         statement = st;
     }
 

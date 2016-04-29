@@ -1,5 +1,7 @@
 package compiler.parser;
 
+import lowlevel.*;
+
 /**
  * This class is a subclass of Statement.
  * It contains if statements
@@ -39,5 +41,61 @@ public class IfStatement extends Statement {
             System.out.println(w + "else:");
             elseStatement.print(w + "    ");
         }
+    }
+    
+    public void genCode(Function f) {
+
+        //declare blocks
+        BasicBlock mythenBlock = new BasicBlock(f);
+        BasicBlock mypostBlock = new BasicBlock(f);
+        BasicBlock myelseBlock = new BasicBlock(f);
+
+        //Create branch to else (or post) block operation
+        expression.genCode(f);
+        Operand ifExpr = new Operand(Operand.OperandType.REGISTER, expression.getRegNum());
+        Operation elseJmp = new Operation(Operation.OperationType.BEQ, f.getCurrBlock());
+        elseJmp.setSrcOperand(0, ifExpr);
+        
+        /*int compReg;
+        if(!f.getTable().containsKey(0)){
+            compReg = f.getNewRegNum();        
+            f.getTable().put(0, compReg);
+        }else{
+            compReg = (int)f.getTable().get(0);
+        }
+        
+        elseJmp.setSrcOperand(1, new Operand(Operand.OperandType.REGISTER, compReg));
+        */
+        elseJmp.setSrcOperand(1, new Operand(Operand.OperandType.INTEGER, 0));
+        if (elseStatement != null) {
+            elseJmp.setSrcOperand(2, new Operand(Operand.OperandType.BLOCK, myelseBlock.getBlockNum()));
+        } else {
+            elseJmp.setSrcOperand(2, new Operand(Operand.OperandType.BLOCK, mypostBlock.getBlockNum()));
+        }
+        f.getCurrBlock().appendOper(elseJmp);
+
+        //append THEN and generate statement
+        f.appendToCurrentBlock(mythenBlock);
+        f.setCurrBlock(mythenBlock);
+        statement.genCode(f);
+
+        //append POST
+        f.appendToCurrentBlock(mypostBlock);
+
+        //generate and append ELSE statement
+        if (elseStatement != null) {
+            f.setCurrBlock(myelseBlock);
+            elseStatement.genCode(f);
+            
+            //append jump back to POST
+            Operation jump = new Operation(Operation.OperationType.JMP, f.getCurrBlock());
+            jump.setSrcOperand(0, new Operand(Operand.OperandType.BLOCK, mypostBlock.getBlockNum()));
+            myelseBlock.appendOper(jump);
+            
+            f.appendUnconnectedBlock(myelseBlock);
+        }
+        
+        //generate POST statement
+        f.setCurrBlock(mypostBlock);
     }
 }

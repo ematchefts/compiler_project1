@@ -1,6 +1,9 @@
 package compiler.parser;
 
 import java.io.FileNotFoundException;
+import lowlevel.*;
+import lowlevel.Operation.OperationType;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
@@ -643,30 +646,30 @@ public class CMinusParser implements Parser {
      */
     private Expression parseSimExpr(Expression e) throws ParserException {
         Expression addExprPrime = parseAddExprPrime(e);
-        BinaryExpression.operation o;
+        Operation o = null;
         switch (nextType) {
             case LESSTHAN_TOKEN:
-                o = BinaryExpression.operation.LESSTHAN;
+                o.setType(Operation.OperationType.LT);
                 advanceToken();
                 break;
             case GREATERTHAN_TOKEN:
-                o = BinaryExpression.operation.GREATERTHAN;
+                o.setType(Operation.OperationType.GT);
                 advanceToken();
                 break;
             case EQUALTO_TOKEN:
-                o = BinaryExpression.operation.EQUALTO;
+                o.setType(Operation.OperationType.EQUAL);
                 advanceToken();
                 break;
             case NOTEQUAL_TOKEN:
-                o = BinaryExpression.operation.NOTEQUAL;
+                o.setType(Operation.OperationType.NOT_EQUAL);;
                 advanceToken();
                 break;
             case LESSTHANEQUALTO_TOKEN:
-                o = BinaryExpression.operation.LESSTHANEQUALTO;
+                o.setType(Operation.OperationType.LTE);;
                 advanceToken();
                 break;
             case GREATERTHANEQUALTO_TOKEN:
-                o = BinaryExpression.operation.GREATERTHANEQUALTO;
+                o.setType(Operation.OperationType.GTE);;
                 advanceToken();
                 break;
             default:
@@ -685,24 +688,24 @@ public class CMinusParser implements Parser {
      * @throws ParserException
      */
     private Expression parseAddExprPrime(Expression e) throws ParserException {
-    	BinaryExpression.operation o = null;
+    	Operation o = null;
     	Expression tp = parseTermPrime(e);
 
     	if (nextType == Token.TokenType.PLUS_TOKEN
     			|| nextType == Token.TokenType.MINUS_TOKEN) {
     		if (nextType == Token.TokenType.PLUS_TOKEN) {
-    			o = BinaryExpression.operation.PLUS;
+    			o.setType(Operation.OperationType.ADD_I);
     		} else if (nextType == Token.TokenType.MINUS_TOKEN) {
-    			o = BinaryExpression.operation.MINUS;
+    			o.setType(Operation.OperationType.SUB_I);
     		}
     		advanceToken();
             BinaryExpression be = new BinaryExpression(tp, parseTerm(), o);
             while (nextType == Token.TokenType.PLUS_TOKEN
                     || nextType == Token.TokenType.MINUS_TOKEN) {
                 if (nextType == Token.TokenType.PLUS_TOKEN) {
-                    o = BinaryExpression.operation.PLUS;
+                	o.setType(Operation.OperationType.ADD_I);
                 } else if (nextType == Token.TokenType.MINUS_TOKEN) {
-                    o = BinaryExpression.operation.MINUS;
+                	o.setType(Operation.OperationType.SUB_I);
                 }
                 be = new BinaryExpression(be, parseTerm(), o);
             }
@@ -720,17 +723,17 @@ public class CMinusParser implements Parser {
      */
     private Expression parseAddExpr() throws ParserException {
     	Expression term = parseTerm();
-        BinaryExpression.operation o = null;
+        Operation o = null;
         Expression be = term;
         if (nextType == Token.TokenType.PLUS_TOKEN
                 || nextType == Token.TokenType.MINUS_TOKEN) {
             while (nextType == Token.TokenType.PLUS_TOKEN
                     || nextType == Token.TokenType.MINUS_TOKEN) {
                 if (nextType == Token.TokenType.PLUS_TOKEN) {
-                    o = BinaryExpression.operation.PLUS;
+                	o.setType(Operation.OperationType.ADD_I);
                     advanceToken();
                 } else if (nextType == Token.TokenType.MINUS_TOKEN) {
-                    o = BinaryExpression.operation.MINUS;
+                	o.setType(Operation.OperationType.SUB_I);
                     advanceToken();
                 }
                 term = parseTerm();
@@ -751,23 +754,23 @@ public class CMinusParser implements Parser {
         //term -> factor { mulop factor }
         Expression lhs = parseFactor();
 
-        BinaryExpression.operation o = null;
+        Operation o = null;
         BinaryExpression be;
         if (nextType == Token.TokenType.MULTIPLY_TOKEN
                 || nextType == Token.TokenType.DIVIDE_TOKEN) {
             if (nextType == Token.TokenType.MULTIPLY_TOKEN) {
-                o = BinaryExpression.operation.MULTIPLY;
+                o.setType(Operation.OperationType.MUL_I);
             } else if (nextType == Token.TokenType.DIVIDE_TOKEN) {
-                o = BinaryExpression.operation.DIVIDE;
+                o.setType(Operation.OperationType.DIV_I);
             }
             advanceToken();
             be = new BinaryExpression(lhs, parseFactor(), o);
             while (nextType == Token.TokenType.MULTIPLY_TOKEN
                     || nextType == Token.TokenType.DIVIDE_TOKEN) {
                 if (nextType == Token.TokenType.MULTIPLY_TOKEN) {
-                    o = BinaryExpression.operation.MULTIPLY;
+                	o.setType(Operation.OperationType.MUL_I);
                 } else if (nextType == Token.TokenType.DIVIDE_TOKEN) {
-                    o = BinaryExpression.operation.DIVIDE;
+                	o.setType(Operation.OperationType.DIV_I);
                 }
                 advanceToken();
                 be = new BinaryExpression(be, parseFactor(), o);
@@ -787,16 +790,16 @@ public class CMinusParser implements Parser {
      * @throws ParserException
      */
     private Expression parseTermPrime(Expression e) throws ParserException {
-    	BinaryExpression.operation o = null;
+    	Operation o = null;
     	BinaryExpression be = null;
         if (nextType == Token.TokenType.MULTIPLY_TOKEN
                 || nextType == Token.TokenType.DIVIDE_TOKEN) {
             while (nextType == Token.TokenType.MULTIPLY_TOKEN
                     || nextType == Token.TokenType.DIVIDE_TOKEN) {
                 if (nextType == Token.TokenType.MULTIPLY_TOKEN) {
-                    o = BinaryExpression.operation.MULTIPLY;
+                	o.setType(Operation.OperationType.MUL_I);
                 } else if (nextType == Token.TokenType.DIVIDE_TOKEN) {
-                    o = BinaryExpression.operation.DIVIDE;
+                	o.setType(Operation.OperationType.DIV_I);
                 }
                 advanceToken();
                 be = new BinaryExpression(e, parseFactor(), o);

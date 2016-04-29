@@ -1,6 +1,7 @@
 package compiler.parser;
 
 import compiler.scanner.*;
+import lowlevel.*;
 
 /**
  * This class is a subclass of Declarations.
@@ -42,6 +43,21 @@ public class VarDeclaration extends Declarations {
             System.out.println(x + "int " + id + ";");
         }else{
             System.out.println(x + "int " + id + "[" + arraySize + "];");
+        }
+    }
+    
+    @Override
+    public CodeItem genCode(){
+        int type;
+        if(typeSpecification == Token.TokenType.INT_TOKEN){
+            type = Data.TYPE_INT;
+        }else{
+            type = Data.TYPE_VOID;
+        }
+        if(arraySize == null){
+            return new Data(type, id);
+        }else{
+            return new Data(type, id, true, arraySize);
         }
     }
 }

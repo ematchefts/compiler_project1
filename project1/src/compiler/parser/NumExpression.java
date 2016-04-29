@@ -1,4 +1,5 @@
 package compiler.parser;
+import lowlevel.*;
 
 /**
  * This class is a subclass of Expression.
@@ -33,5 +34,14 @@ public class NumExpression extends Expression {
     @Override
     public void print(String x) {
         System.out.print(x + num + "\n");
+    }
+    
+    public void genCode(Function f) {
+        if (!f.getTable().containsKey(num)) {
+            regNum = f.getNewRegNum();
+            f.getTable().put(num, regNum);
+        }else{
+            regNum = (int) f.getTable().get(num);
+        }
     }
 }

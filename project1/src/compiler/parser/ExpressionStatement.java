@@ -1,4 +1,5 @@
 package compiler.parser;
+import lowlevel.*;
 
 /**
  * This class is a subclass of statement.
@@ -28,5 +29,9 @@ public class ExpressionStatement extends Statement {
         if (expression != null) {
             expression.print(w + "    ");
         }
+    }
+    
+    public void genCode(Function f){
+        expression.genCode(f);
     }
 }

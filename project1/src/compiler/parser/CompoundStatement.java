@@ -1,6 +1,7 @@
 package compiler.parser;
 
 import java.util.ArrayList;
+import lowlevel.*;
 
 /**
  * This class is a subclass of statement.
@@ -44,5 +45,27 @@ public class CompoundStatement extends Statement {
             }
         }
         System.out.println(w + "}");
+    }
+    
+    @Override
+    public void genCode(Function f) {
+
+        for (int i = 0; i < varDeclarations.size(); i++) {
+            //Do some stuff?
+            VarDeclaration v = varDeclarations.get(i);
+            Data d = (Data) v.genCode();
+
+            //Add to symbol table
+            if (f.getTable().containsKey(v.id)) {
+                throw new CodeGenerationException("Variable " + v.id + " was declared multiple times.");
+            }
+            
+        }
+
+        for (int i = 0; i < statements.size(); i++) {
+            Statement s = statements.get(i);
+            s.genCode(f);
+        }
+
     }
 }

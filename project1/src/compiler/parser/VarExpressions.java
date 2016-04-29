@@ -1,4 +1,5 @@
 package compiler.parser;
+import lowlevel.*;
 
 /**
  * This class is a subclass of Expression.
@@ -49,6 +50,15 @@ public class VarExpressions extends Expression {
             System.out.println(x + "[");
             expression.print(x + "    ");
             System.out.println(x + "]");
+        }
+    }
+    
+    public void genCode(Function f) {
+        if (!f.getTable().containsKey(var)) {
+            regNum = f.getNewRegNum();
+            f.getTable().put(var, regNum);
+        }else{
+            regNum = (int) f.getTable().get(var);
         }
     }
 }

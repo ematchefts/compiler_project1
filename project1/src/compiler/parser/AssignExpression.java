@@ -1,4 +1,5 @@
 package compiler.parser;
+import lowlevel.*;
 
 /**
  * This class is a subclass of Expression. 
@@ -31,5 +32,26 @@ public class AssignExpression extends Expression {
         System.out.println(x + "=");
         assignto.print(x + "    ");
         assignfrom.print(x + "    ");
+    }
+    
+    public void genCode(Function f){
+        assignto.genCode(f);
+        assignfrom.genCode(f);
+        int destReg = assignto.getRegNum();
+        int srcReg = assignfrom.getRegNum();
+        
+        Operation op = new Operation(Operation.OperationType.ASSIGN, f.getCurrBlock());
+        
+        Operand srcOp;
+        if(assignfrom instanceof NumExpression){
+            srcOp = new Operand(Operand.OperandType.INTEGER, ((NumExpression)assignfrom).getNum());
+        }else{
+            srcOp = new Operand(Operand.OperandType.REGISTER, srcReg);
+        }
+        Operand destOp = new Operand(Operand.OperandType.REGISTER, destReg);
+        op.setSrcOperand(0, srcOp);
+        op.setDestOperand(0, destOp);
+        
+        f.getCurrBlock().appendOper(op);
     }
 }

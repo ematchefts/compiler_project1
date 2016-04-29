@@ -1,0 +1,10 @@
+package compiler;
+import lowlevel.*;
+
+/**
+ *
+ * @author Michael
+ */
+public interface CodeGen {
+    public abstract CodeItem genLLCode();
+}

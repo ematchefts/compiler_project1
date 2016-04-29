@@ -1,6 +1,7 @@
 
 package compiler.parser;
 import compiler.scanner.*;
+import lowlevel.*;
 
  /**
  * This class is an abstract declarations class.
@@ -27,4 +28,6 @@ public abstract class Declarations {
      * Abstract print function for declaration
      */
     public abstract void print(String w);
+    
+    public abstract CodeItem genCode();
 }

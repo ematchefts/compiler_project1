@@ -1,4 +1,5 @@
 package compiler.parser;
+import lowlevel.*;
 
 /**
  * Abstract statement class
@@ -14,4 +15,6 @@ public abstract class Statement {
 	 * @param x white space, used to line up abstract syntax tree
 	 */
     public abstract void print(String x);
+    
+    public abstract void genCode(Function f);
 }

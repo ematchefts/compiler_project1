@@ -1,5 +1,7 @@
 package compiler.parser;
 
+import lowlevel.*;
+
 /**
  * This class contains parameters
  * 
@@ -21,6 +23,14 @@ public class Param {
         id = ident;
         hasBrackets = brackets;
     }
+    
+    public String getId() {
+        return id;
+    }
+    
+    public boolean hasBrackets() {
+        return hasBrackets;
+    }
 
     /**
      * Print function for parameters
@@ -30,6 +40,12 @@ public class Param {
         System.out.print(w + id);
         if (hasBrackets) {
             System.out.print("[]");
+        }
+    }
+    
+    public void genCode(Function f) {
+        if (!f.getTable().containsKey(id)) {
+            f.getTable().put(id, f.getNewRegNum());
         }
     }
 }

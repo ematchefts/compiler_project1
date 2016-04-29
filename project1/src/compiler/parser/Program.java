@@ -1,6 +1,7 @@
 package compiler.parser;
 
 import java.util.*;
+import lowlevel.*;
 
 /**
  * This class contains the entire program being parsed. 
@@ -30,5 +31,22 @@ public class Program {
         while (!declList.isEmpty()) {
             declList.remove(0).print(x);
         }
+    }
+    
+    public CodeItem genLLCode() {
+
+        if (declList.isEmpty()) {
+            throw new CodeGenerationException("Empty decl list.");
+        }
+
+        CodeItem head = declList.get(0).genCode();
+        CodeItem ci = head;
+
+        for (int i = 1; i < declList.size(); i++) {
+            ci.setNextItem(declList.get(i).genCode());
+            ci = ci.getNextItem();
+        }
+        
+        return head;
     }
 }

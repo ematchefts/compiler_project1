@@ -1,7 +1,7 @@
 package compiler.parser;
 
 import java.util.ArrayList;
-
+import lowlevel.*;
 import compiler.scanner.*;
 
 /**
@@ -42,5 +42,43 @@ public class FunDeclaration extends Declarations {
             System.out.println();
         }
         compoundStatement.print(x + "    ");
+    }
+    
+    public CodeItem genCode() {
+        Function f;
+        int type;
+        if (typeSpecification == Token.TokenType.INT_TOKEN) {
+            type = Data.TYPE_INT;
+        } else {
+            type = Data.TYPE_VOID;
+        }
+        if (params.isEmpty()) {
+            f = new Function(type, id);
+        } else {
+            Param first = params.get(0);
+            FuncParam firstParam = new FuncParam(Data.TYPE_INT, first.getId(), first.hasBrackets());
+            FuncParam previousParam = firstParam;
+            for (int i = 1; i < params.size(); i++) {
+                Param next = params.get(i);
+                FuncParam nextParam = new FuncParam(Data.TYPE_INT, next.getId(), next.hasBrackets());
+                previousParam.setNextParam(nextParam);
+                previousParam = nextParam;
+            }
+            f = new Function(type, id, firstParam);
+            for(Param p: params){
+                p.genCode(f);
+            }
+        }
+        f.createBlock0();
+        BasicBlock newBlock = new BasicBlock(f);
+        f.appendBlock(newBlock);
+        f.setCurrBlock(newBlock);
+        compoundStatement.genCode(f);
+        f.appendToCurrentBlock(f.getReturnBlock());
+        //f.appendBlock(f.getReturnBlock());
+        if (f.getFirstUnconnectedBlock() != null) {
+            f.appendBlock(f.getFirstUnconnectedBlock());
+        }
+        return f;
     }
 }

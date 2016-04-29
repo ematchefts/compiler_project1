@@ -1,0 +1,34 @@
+package compiler.parser;
+
+/**
+ *
+ * @author Michael
+ */
+public class VarExpressions extends Expression {
+
+    private String var;
+    private Expression inBrackets;
+
+    public VarExpressions(String s) {
+        this(s, null);
+    }
+
+    public VarExpressions(String s, Expression e) {
+        var = s;
+        inBrackets = e;
+    }
+
+    public String getVar() {
+        return var;
+    }
+
+    @Override
+    public void print(String w) {
+        System.out.println(w + var);
+        if (inBrackets != null) {
+            System.out.println(w + "[");
+            inBrackets.print(w + "    ");
+            System.out.println(w + "]");
+        }
+    }
+}

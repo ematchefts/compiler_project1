@@ -1,37 +1,44 @@
-/* A Program to put an input 
-value through all kinds of 
-abuse for science (a.k.a. Scanner
-testing) */
+/* A program to perform selection sort on a 10 element array. */
 
-int process (int n, int m)
-{ 
-  if (n+1 <= 0) return void ;
-  else{
-	if(n != m){
-		n = n * m;
-	}
-	if(n >= m){
-		n = n / m;
-	}
-	while(n < n*m){
-		n = n+n;
-	}
-	while(n > m){
-		n = n - 1;
-	}
-	if(n == 1){
-		n = n;
-	}
-  } 
-  return process(n-1);
+int x[10];
+
+int minloc ( int a[], int low, int high )
+{ int i; int x; int k;
+   k = low;
+   x = a[low];
+   i = low + 1;
+   while (i < high)
+   { if (a[i] < x)
+      { x = a[i];
+        k = i; }
+   i = i + 1;
+   }
+   return k;
 }
 
-/* Main! */
-void main(void)
-{ int x;
-  int y;
-  x = input();
-  y = input();
-  int z[y];
-  output(process(x,y));
- }
+void sort (int a[], int low, int high)
+{ int i; int k;
+   i = low;
+   while (i < high - 1)
+      { int t;
+        k = minloc(a,i,high);
+        t = a[k];
+        a[k] = a[i];
+        a[i] = t;
+        i = i + 1;
+      }
+}
+
+void main (void) 
+{
+   int i;
+   i = 0;
+   while (i < 10)
+     {x[i] = input();
+      i = i + 1; }
+   sort(x,0,10);
+   i = 0;
+   while (i < 10)
+     { output (x[i]);
+       i = i + 1; }
+}

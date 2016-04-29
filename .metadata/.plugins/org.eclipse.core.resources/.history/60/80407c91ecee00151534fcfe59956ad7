@@ -1,0 +1,33 @@
+package compiler.parser;
+
+public class ExpressionP {
+	
+	private Expression expression;
+	private ExpressionPP expressionPP;
+	private Args args;
+	private SimpleExpressionP simpleExpressionP;
+	
+	public ExpressionP (Expression exp){
+		expression = exp;
+	}
+	
+	public ExpressionP (Expression exp, ExpressionPP epp) {
+		expression = exp;
+		expressionPP = epp;	
+	}
+	
+	public ExpressionP (Args a, SimpleExpressionP sep) {
+		args = a;
+		simpleExpressionP = sep;
+	}
+	
+	public ExpressionP (SimpleExpressionP sep){
+		simpleExpressionP = sep;
+	}
+
+	public static ExpressionP parseExpressionP(Parser parser) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

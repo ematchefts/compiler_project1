@@ -1,0 +1,36 @@
+package compilerproject2;
+
+import java.io.*;
+import java.util.*;
+
+/**
+ *
+ * @author Michael
+ */
+public class CompilerProject2 {
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) throws FileNotFoundException, IOException {
+
+        System.out.println("What file would you like to parse?");
+        java.util.Scanner inputScanner = new java.util.Scanner(System.in);
+        String input = inputScanner.nextLine();
+
+        FileReader inputFile = new FileReader(input);
+
+        System.setOut(new PrintStream(new BufferedOutputStream(new FileOutputStream("ast.txt")), true));        
+        
+        Scanner myScan = new CMinusScanner(inputFile);
+        Parser myParser = new CMinusParser(myScan);
+        Program myProgram;
+        
+        try {
+            myProgram = myParser.parse();
+            myProgram.print();
+        } catch (ParseException pe) {
+            System.err.println(pe.getMessage());
+        }
+    }
+}

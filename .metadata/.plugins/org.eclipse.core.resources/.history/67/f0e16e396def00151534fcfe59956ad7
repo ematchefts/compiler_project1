@@ -1,0 +1,39 @@
+package compilerproject2;
+
+/**
+ *
+ * @author Michael
+ */
+public class BinExp extends Expression {
+
+    public enum operation {
+
+        PLUS,
+        MINUS,
+        MULT,
+        DIV,
+        COMPARE,
+        NOTEQ,
+        LT,
+        GT,
+        LTE,
+        GTE
+    }
+
+    private Expression operand1;
+    private Expression operand2;
+    private operation op;
+
+    public BinExp(Expression operand1, Expression operand2, operation op) {
+        this.operand1 = operand1;
+        this.operand2 = operand2;
+        this.op = op;
+    }
+
+    @Override
+    public void print(String w) {
+        System.out.println(w + op.toString());
+        operand1.print(w + "    ");
+        operand2.print(w + "    ");
+    }
+}

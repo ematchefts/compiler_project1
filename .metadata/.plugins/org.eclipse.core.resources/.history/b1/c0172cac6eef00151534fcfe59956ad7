@@ -1,0 +1,28 @@
+package compilerproject2;
+
+/**
+ *
+ * @author Michael
+ */
+public class VarDecl extends Decl {
+    private Integer optional;
+    
+    public VarDecl(String s, Integer optional){
+        super(Token.TokenType.INT, s);
+        this.optional = optional;
+    }
+    
+    public VarDecl(String s){
+        super(Token.TokenType.INT, s);
+        this.optional = null;
+    }
+    
+    @Override
+    public void print(String w){
+        if(optional == null){
+            System.out.println(w + "int " + id + ";");
+        }else{
+            System.out.println(w + "int " + id + "[" + optional + "];");
+        }
+    }
+}

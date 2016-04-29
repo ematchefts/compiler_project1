@@ -1,0 +1,23 @@
+package compilerproject2;
+
+/**
+ *
+ * @author Michael
+ */
+public class AssignExpr extends Expression {
+
+    private VarExpr assignto;
+    private Expression assignfrom;
+
+    public AssignExpr(VarExpr to, Expression from) {
+        assignto = to;
+        assignfrom = from;
+    }
+
+    @Override
+    public void print(String w) {
+        System.out.println(w + "=");
+        assignto.print(w + "    ");
+        assignfrom.print(w + "    ");
+    }
+}

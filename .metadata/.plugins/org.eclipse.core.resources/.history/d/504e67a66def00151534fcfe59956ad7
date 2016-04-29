@@ -1,0 +1,27 @@
+package compiler.parser;
+
+import java.util.*;
+
+/**
+ *
+ * @author Michael
+ */
+public class CallExpression extends Expression {
+
+    private String call;
+    private ArrayList<Expression> args;
+
+    public CallExpression(String c, ArrayList<Expression> a) {
+        call = c;
+        args = a;
+    }
+
+    @Override
+    public void print(String w) {
+        System.out.println(w + "call: " + call);
+        System.out.println(w + "    " + "params:");
+        while (!args.isEmpty()) {
+            args.remove(0).print(w + "    ");
+        }
+    }
+}

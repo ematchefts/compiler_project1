@@ -1,0 +1,10 @@
+package compilerproject2;
+
+/**
+ *
+ * @author Michael
+ */
+public interface Parser {
+
+    public Program parse() throws ParserException;
+}

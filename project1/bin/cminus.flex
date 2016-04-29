@@ -101,6 +101,29 @@ import java.io.IOException;
 		return returnString;
 	}
 	
+	public Token.TokenType getTokenType(){
+		Token.TokenType returnType = Token.TokenType.EOF_TOKEN;
+		if (viewNextToken().getTokenType() != null) {
+			returnType = viewNextToken().getTokenType();
+		}
+		return returnType;
+	}
+	
+	public Object getTokenData() {
+		Object returnData = null;
+		if (viewNextToken().getTokenData() != null) {
+			returnData = viewNextToken().getTokenData();
+		}
+		return returnData;
+	}
+	
+	public int getCurrentLine(){
+		return yyline + 1;
+	}
+	
+	public int getCurrentColumn(){
+		return yycolumn;
+	}
 	
 
 %}
@@ -143,7 +166,7 @@ LexError = ([:jletter:][0-9]) | ([0-9][:jletter])
   "("                            { return new Token(Token.TokenType.LEFTPAREN_TOKEN); }
   ")"                            { return new Token(Token.TokenType.RIGHTPAREN_TOKEN); }
   "{"                            { return new Token(Token.TokenType.LEFTCURLYBRACE_TOKEN); }
-  "}"                            { return new Token(Token.TokenType.LEFTCURLYBRACE_TOKEN); }
+  "}"                            { return new Token(Token.TokenType.RIGHTCURLYBRACE_TOKEN); }
   "["                            { return new Token(Token.TokenType.LEFTSQBRACKET_TOKEN); }
   "]"                            { return new Token(Token.TokenType.RIGHTSQBRACKET_TOKEN); }
   ";"                            { return new Token(Token.TokenType.SEMICOLON_TOKEN); }
@@ -166,9 +189,9 @@ LexError = ([:jletter:][0-9]) | ([0-9][:jletter])
 
   /* This is matched together with the minus, because the number is too big to 
      be represented by a positive integer. */
-  "-2147483648"                  { return new Token(Token.TokenType.INT_TOKEN, new Integer(Integer.MIN_VALUE)); }
+  "-2147483648"                  { return new Token(Token.TokenType.NUM_TOKEN, new Integer(Integer.MIN_VALUE)); }
   
-  {DecIntegerLiteral}            { return new Token(Token.TokenType.INT_TOKEN, new Integer(yytext())); }
+  {DecIntegerLiteral}            { return new Token(Token.TokenType.NUM_TOKEN, new Integer(yytext())); }
  
   /* comments */
   {Comment}                      { /* ignore */ }

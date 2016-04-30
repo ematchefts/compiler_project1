@@ -82,6 +82,17 @@ public class Operation {
     maxDest = -1;
 
   }
+  
+  public Operation(OperationType type) {
+      opNum = -1;
+      opType = type;
+      prevOper = null;
+      nextOper = null;
+      dest = new Operand[MAX_DEST_OPERANDS];
+      src = new Operand[MAX_SRC_OPERANDS];
+      maxSrc = -1;
+      maxDest = -1;
+  }
 
 /***************************************************************************/
   // accessor methods

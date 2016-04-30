@@ -29,7 +29,7 @@ public class CMinusCompiler implements Compiler {
 
     public void compile(String filePrefix) {
 
-        String fileName = filePrefix + ".c";
+        String fileName = filePrefix;// + ".c";
         try {
             FileReader file = new FileReader(fileName);
             CMinusScanner_jflex myScanner = new CMinusScanner_jflex(file);
@@ -37,13 +37,14 @@ public class CMinusCompiler implements Compiler {
             Program parseTree = null;
             try {
             	parseTree = myParser.parse();
+            	parseTree.print();
             }catch (ParserException pe) {
             	System.err.println("Parser hit exception and stopped reading the "
             			+ "input file on line " + myScanner.getCurrentLine() + 
             			", somewhere around column " + myScanner.getCurrentColumn() + ".");
                 pe.printStackTrace(); // Includes exception message
             }
-            parseTree.print();
+            
             CodeGen myCode = new CMinusCodeGen(parseTree);
 
             CodeItem lowLevelCode = myCode.genLLCode();

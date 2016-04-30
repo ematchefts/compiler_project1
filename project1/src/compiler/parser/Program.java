@@ -24,12 +24,17 @@ public class Program {
 
     /**
      * Program print function
+     * @throws ParserException 
      */
-    public void print() {
-        String x = "    ";
+    public void print() throws ParserException  {
+        String w = "    ";
         System.out.println("program:");
-        while (!declList.isEmpty()) {
-            declList.remove(0).print(x);
+        if (declList.isEmpty()) {
+            throw new ParserException("Empty decl list.");
+        }
+
+        for (Declarations declList1 : declList) {
+            declList1.print(w);
         }
     }
     

@@ -37,7 +37,7 @@ public class FunDeclaration extends Declarations {
     public void print(String x) {
         System.out.println(x + "function " + id + " returns " + typeSpecification);
         System.out.println(x + "    " + "params:");
-        for (Param parameter : params) {
+        while (Param parameter : params) {
             parameter.print(x + "        ");
             System.out.println();
         }

@@ -37,8 +37,8 @@ public class FunDeclaration extends Declarations {
     public void print(String x) {
         System.out.println(x + "function " + id + " returns " + typeSpecification);
         System.out.println(x + "    " + "params:");
-        for (Param parameter : params) {
-            parameter.print(x + "        ");
+        while (!params.isEmpty()) {
+            params.remove(0).print(x + "        ");
             System.out.println();
         }
         compoundStatement.print(x + "    ");
@@ -75,6 +75,7 @@ public class FunDeclaration extends Declarations {
         f.setCurrBlock(newBlock);
         compoundStatement.genCode(f);
         f.appendToCurrentBlock(f.getReturnBlock());
+        //f.appendBlock(f.getReturnBlock());
         if (f.getFirstUnconnectedBlock() != null) {
             f.appendBlock(f.getFirstUnconnectedBlock());
         }

@@ -56,6 +56,16 @@ public class IfStatement extends Statement {
         Operation elseJmp = new Operation(Operation.OperationType.BEQ, f.getCurrBlock());
         elseJmp.setSrcOperand(0, ifExpr);
         
+        /*int compReg;
+        if(!f.getTable().containsKey(0)){
+            compReg = f.getNewRegNum();        
+            f.getTable().put(0, compReg);
+        }else{
+            compReg = (int)f.getTable().get(0);
+        }
+        
+        elseJmp.setSrcOperand(1, new Operand(Operand.OperandType.REGISTER, compReg));
+        */
         elseJmp.setSrcOperand(1, new Operand(Operand.OperandType.INTEGER, 0));
         if (elseStatement != null) {
             elseJmp.setSrcOperand(2, new Operand(Operand.OperandType.BLOCK, myelseBlock.getBlockNum()));

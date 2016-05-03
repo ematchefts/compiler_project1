@@ -114,9 +114,6 @@ public class Operation {
   }
   public void setBlock (BasicBlock newBlock) {
     block = newBlock;
-    if (opNum == -1) {
-        opNum = newBlock.getFunc().getNewOperNum();
-    }
   }
 
   public Operation getPrevOper () {

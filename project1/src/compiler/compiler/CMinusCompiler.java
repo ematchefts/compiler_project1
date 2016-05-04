@@ -27,9 +27,16 @@ public class CMinusCompiler implements Compiler {
         return genX64Code;
     }
 
-    public void compile(String filePrefix) {
+    public void compile(String fileName) {
 
-        String fileName = filePrefix;// + ".c";
+    	String filePrefix;
+    	if(fileName.contains(".")){
+    		filePrefix = fileName.substring(0, fileName.lastIndexOf('.'));
+    	}
+    	else{
+    		filePrefix = fileName;
+    	}
+        
         try {
             FileReader file = new FileReader(fileName);
             CMinusScanner_jflex myScanner = new CMinusScanner_jflex(file);
@@ -132,9 +139,9 @@ public class CMinusCompiler implements Compiler {
     }
 
     public static void main(String[] args) {
-        String filePrefix = args[0];
+        String fileName = args[0];
         CMinusCompiler myCompiler = new CMinusCompiler();
         myCompiler.setGenX64Code(true);
-        myCompiler.compile(filePrefix);
+        myCompiler.compile(fileName);
     }
 }
